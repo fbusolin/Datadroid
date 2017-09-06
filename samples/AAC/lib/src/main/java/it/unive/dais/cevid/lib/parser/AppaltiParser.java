@@ -23,8 +23,8 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
     private static final String TAG = "AppaltiParser";
     private List<URL> urls;
 
-    public AppaltiParser(List<URL> url) {
-        this.urls = url;
+    public AppaltiParser(List<URL> urls) {
+        this.urls = urls;
     }
 
     @NonNull
