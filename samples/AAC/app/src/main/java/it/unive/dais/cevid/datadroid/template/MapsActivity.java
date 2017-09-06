@@ -167,6 +167,7 @@ public class MapsActivity extends AppCompatActivity
             }
         });
 
+        //add Ca Foscari
         uni = new ArrayList<>();
         try {
             List<URL> urls = new ArrayList<>();
@@ -175,6 +176,20 @@ public class MapsActivity extends AppCompatActivity
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        //add Padova
+        try {
+            List<URL> urls = new ArrayList<>();
+            urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s1_01.xml"));
+            urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s1_02.xml"));
+            urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s1_03.xml"));
+            urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s2_01.xml"));
+            urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s2_02.xml"));
+            uni.add(new University("Università di Padova", 45.406766, 11.8774462 , "Università degli studi di Padova", urls , "000058546000000"));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

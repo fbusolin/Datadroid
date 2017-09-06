@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -55,26 +56,90 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
     protected List<Data> parseNodes(NodeList nodes) {
         List<Data> r = new ArrayList<>();
         for (int i = 0; i< nodes.getLength(); i++){
-            Node nodo = nodes.item(i);
+            Element nodo = (Element) nodes.item(i);
             Data d = new Data();
 
-            d.cig = nodo.getFirstChild().getTextContent();
+            //controlli aggiudicatario
+            if (nodo.getElementsByTagName("aggiudicatario").item(0)!=null) {
+                Element  s = (Element) nodo.getElementsByTagName("aggiudicatario").item(0);
+                if (s.getElementsByTagName("ragioneSociale").item(0) != null)
+                    d.aggiudicatario = s.getElementsByTagName("ragioneSociale").item(0).getTextContent();
+                else
+                    d.aggiudicatario = "Dati assenti o malformattati";
 
-            if( nodo.getChildNodes().item(5).hasChildNodes()){
-            d.aggiudicatario = nodo.getChildNodes().item(5).getFirstChild().getLastChild().getTextContent();
-            d.codiceFiscaleAgg = nodo.getChildNodes().item(5).getFirstChild().getFirstChild().getTextContent();
-            } else{
-                d.aggiudicatario="Dati assenti o malformattati";
-                d.codiceFiscaleAgg="0";
+                if (s.getElementsByTagName("codiceFiscale").item(0) != null)
+                    d.codiceFiscaleAgg = s.getElementsByTagName("codiceFiscale").item(0).getTextContent();
+                else
+                    d.codiceFiscaleAgg = "0";
+            }else{
+                d.aggiudicatario = "Dati assenti o malformattati";
+                d.codiceFiscaleAgg = "0";
             }
-            d.proponente = nodo.getChildNodes().item(1).getLastChild().getTextContent();
-            d.codiceFiscaleProp = nodo.getChildNodes().item(1).getFirstChild().getTextContent();
-            d.oggetto = nodo.getChildNodes().item(2).getTextContent();
-            d.sceltac = nodo.getChildNodes().item(3).getTextContent();
-            d.importo = nodo.getChildNodes().item(6).getTextContent();
-            d.importoSommeLiquidate = nodo.getLastChild().getTextContent();
-            d.dataFine = nodo.getChildNodes().item(7).getLastChild().getTextContent();
-            d.dataInizio = nodo.getChildNodes().item(7).getFirstChild().getTextContent();
+
+
+            //controllo porponente
+            if (nodo.getElementsByTagName("strutturaProponente").item(0)!=null) {
+
+                Element  s = (Element) nodo.getElementsByTagName("strutturaProponente").item(0);
+                if (s.getElementsByTagName("ragioneSociale").item(0) != null)
+                    d.proponente = s.getElementsByTagName("ragioneSociale").item(0).getTextContent();
+                else
+                    d.proponente = "Dati assenti o malformattati";
+
+                if (s.getElementsByTagName("codiceFiscale").item(0) != null)
+                    d.codiceFiscaleProp = s.getElementsByTagName("codiceFiscale").item(0).getTextContent();
+                else
+                    d.codiceFiscaleProp = "0";
+
+            }else{
+                d.aggiudicatario = "Dati assenti o malformattati";
+                d.codiceFiscaleAgg = "0";
+            }
+
+            //controllo oggetto
+            if (nodo.getElementsByTagName("oggetto").item(0) !=null) {
+            d.oggetto = nodo.getElementsByTagName("oggetto").item(0).getTextContent();
+            }else{
+                d.oggetto = "Dati assenti o malformattati";
+            }
+
+            //controllo scelta contraente
+            if (nodo.getElementsByTagName("sceltaContraente").item(0) !=null) {
+                d.sceltac = nodo.getElementsByTagName("sceltaContraente").item(0).getTextContent();
+            }else{
+                d.sceltac = "Dati assenti o malformattati";
+            }
+
+            //controllo importo
+            if (nodo.getElementsByTagName("importo").item(0) !=null) {
+                d.importo = nodo.getElementsByTagName("importo").item(0).getTextContent();
+            }else {
+                d.importo = "0";
+            }
+
+            //controllo importo somme liquidate
+            if (nodo.getElementsByTagName("importoSommeLiquidate").item(0) !=null) {
+                d.importoSommeLiquidate = nodo.getElementsByTagName("importoSommeLiquidate").item(0).getTextContent();
+            }else {
+                d.importoSommeLiquidate = "0";
+            }
+
+            //controllo tempi di completamento
+            if (nodo.getElementsByTagName("tempiCompletamento").item(0) !=null) {
+                Element  s = (Element) nodo.getElementsByTagName("tempiCompletamento").item(0);
+                if (s.getElementsByTagName("dataUltimazione").item(0) != null)
+                    d.dataFine = s.getElementsByTagName("dataUltimazione").item(0).getTextContent();
+                else
+                    d.dataFine = "Dati assenti o malformattati";
+
+                if (s.getElementsByTagName("dataInizio").item(0) != null)
+                    d.dataInizio = s.getElementsByTagName("dataInizio").item(0).getTextContent();
+                else
+                    d.dataInizio = "Dati assenti o malformattati";
+            }else{
+                d.dataFine ="Dati assenti o malformattati";
+                d.dataInizio ="Dati assenti o malformattati";
+            }
 
             r.add(d);
         }
