@@ -13,8 +13,8 @@ import java.util.concurrent.ExecutionException;
 import it.unive.dais.cevid.aac.util.AppaltiAdapter;
 import it.unive.dais.cevid.aac.util.University;
 import it.unive.dais.cevid.datadroid.template.R;
-import it.unive.dais.cevid.lib.parser.AppaltiParser;
-import it.unive.dais.cevid.lib.parser.SoldiPubbliciParser;
+import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
+import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
 
 
 public class UniversityActivity extends AppCompatActivity {

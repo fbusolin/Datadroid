@@ -18,7 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import java.util.Map;
 
 import it.unive.dais.cevid.datadroid.template.R;
-import it.unive.dais.cevid.lib.util.UnexpectedException;
+import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
 
 /**
  * Activity che rappresenta la schermata delle impostazioni accessibile tramite il menu.

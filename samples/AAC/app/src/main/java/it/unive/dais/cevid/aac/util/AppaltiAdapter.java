@@ -10,7 +10,7 @@ import java.util.List;
 
 
 import it.unive.dais.cevid.datadroid.template.R;
-import it.unive.dais.cevid.lib.parser.AppaltiParser;
+import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 
 
 

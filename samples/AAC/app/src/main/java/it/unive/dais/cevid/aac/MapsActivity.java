@@ -60,8 +60,8 @@ import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
 import it.unive.dais.cevid.datadroid.template.R;
-import it.unive.dais.cevid.lib.parser.DataParser;
-import it.unive.dais.cevid.lib.util.MapItem;
+import it.unive.dais.cevid.datadroid.lib.parser.DataParser;
+import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
 
 /**

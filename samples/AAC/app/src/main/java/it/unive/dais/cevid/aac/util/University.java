@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-import it.unive.dais.cevid.lib.util.MapItem;
+import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
 /**
  * Created by Fonto on 04/09/17.
