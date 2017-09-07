@@ -15,6 +15,14 @@ public class DataManipulation {
         l.retainAll(c);
     }
 
+    public static <T> double sumBy(List<T> l, Function<T, Double> f) {
+        double r = 0.;
+        for (T x : l) {
+            r += f.eval(x);
+        }
+        return r;
+    }
+
     public static <T> void filterByCode(List<T> l, final int code, final Function<T, Integer> getCode) {
         filter(l, new Function<T, Boolean>() {
             @Override
