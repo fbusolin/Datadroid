@@ -22,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Data, Progress> {
     private static final String TAG = "AppaltiParser";
+    private static final String DATI_ASSENTI_O_MAL_FORMATTATI = "Dati assenti o mal formattati";
+
     private List<URL> urls;
 
     public AppaltiParser(List<URL> url) {
@@ -33,7 +35,7 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
     protected List<Data> parse() throws IOException {
         NodeList nodes;
         List<Data> datalist = new ArrayList<>();
-        for (URL url :urls) {
+        for (URL url : urls) {
             try {
                 Log.d(TAG, "downloading " + url);
                 URLConnection conn = url.openConnection();
@@ -53,34 +55,67 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
         return datalist;
     }
 
+    protected String getTextByTag(Element e, String tagName, String defaultString) {
+        Node n = getElementByTag(e, tagName);
+        return n == null ? defaultString : n.getTextContent();
+    }
+
+    protected String getTextByTag(Element e, String tagName) {
+        return getTextByTag(e, tagName, DATI_ASSENTI_O_MAL_FORMATTATI);
+    }
+
+    protected Element getElementByTag(Element e, String tagName) {
+        return (Element) e.getElementsByTagName(tagName).item(0);
+    }
+
     protected List<Data> parseNodes(NodeList nodes) {
         List<Data> r = new ArrayList<>();
-        for (int i = 0; i< nodes.getLength(); i++){
-            Element nodo = (Element) nodes.item(i);
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element parent = (Element) nodes.item(i);
             Data d = new Data();
 
             //controlli aggiudicatario
-            if (nodo.getElementsByTagName("aggiudicatario").item(0)!=null) {
-                Element  s = (Element) nodo.getElementsByTagName("aggiudicatario").item(0);
-                if (s.getElementsByTagName("ragioneSociale").item(0) != null)
-                    d.aggiudicatario = s.getElementsByTagName("ragioneSociale").item(0).getTextContent();
+            {
+                Element e = getElementByTag(parent, "aggiudicatario");
+                if (e != null) {
+                    d.aggiudicatario = getTextByTag(e, "ragioneSociale");
+                    d.codiceFiscaleAgg = getTextByTag(e, "codiceFiscale", "0");
+                } else {
+                    d.aggiudicatario = DATI_ASSENTI_O_MAL_FORMATTATI;
+                    d.codiceFiscaleAgg = "0";
+                }
+
+            }
+
+            {
+                d.oggetto = getTextByTag(parent, "oggetto");
+            }
+
+
+
+            // TODO: riscrivere il seguente codice con l'API nuova
+
+            if (parent.getElementsByTagName("aggiudicatario").item(0) != null) {
+                Element e = (Element) parent.getElementsByTagName("aggiudicatario").item(0);
+                if (e.getElementsByTagName("ragioneSociale").item(0) != null)
+                    d.aggiudicatario = e.getElementsByTagName("ragioneSociale").item(0).getTextContent();
                 else
                     d.aggiudicatario = "Dati assenti o malformattati";
 
-                if (s.getElementsByTagName("codiceFiscale").item(0) != null)
-                    d.codiceFiscaleAgg = s.getElementsByTagName("codiceFiscale").item(0).getTextContent();
+                if (e.getElementsByTagName("codiceFiscale").item(0) != null)
+                    d.codiceFiscaleAgg = e.getElementsByTagName("codiceFiscale").item(0).getTextContent();
                 else
                     d.codiceFiscaleAgg = "0";
-            }else{
+            } else {
                 d.aggiudicatario = "Dati assenti o malformattati";
                 d.codiceFiscaleAgg = "0";
             }
 
 
             //controllo porponente
-            if (nodo.getElementsByTagName("strutturaProponente").item(0)!=null) {
+            if (parent.getElementsByTagName("strutturaProponente").item(0) != null) {
 
-                Element  s = (Element) nodo.getElementsByTagName("strutturaProponente").item(0);
+                Element s = (Element) parent.getElementsByTagName("strutturaProponente").item(0);
                 if (s.getElementsByTagName("ragioneSociale").item(0) != null)
                     d.proponente = s.getElementsByTagName("ragioneSociale").item(0).getTextContent();
                 else
@@ -91,42 +126,42 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
                 else
                     d.codiceFiscaleProp = "0";
 
-            }else{
+            } else {
                 d.aggiudicatario = "Dati assenti o malformattati";
                 d.codiceFiscaleAgg = "0";
             }
 
             //controllo oggetto
-            if (nodo.getElementsByTagName("oggetto").item(0) !=null) {
-                d.oggetto = nodo.getElementsByTagName("oggetto").item(0).getTextContent();
-            }else{
+            if (parent.getElementsByTagName("oggetto").item(0) != null) {
+                d.oggetto = parent.getElementsByTagName("oggetto").item(0).getTextContent();
+            } else {
                 d.oggetto = "Dati assenti o malformattati";
             }
 
             //controllo scelta contraente
-            if (nodo.getElementsByTagName("sceltaContraente").item(0) !=null) {
-                d.sceltac = nodo.getElementsByTagName("sceltaContraente").item(0).getTextContent();
-            }else{
+            if (parent.getElementsByTagName("sceltaContraente").item(0) != null) {
+                d.sceltac = parent.getElementsByTagName("sceltaContraente").item(0).getTextContent();
+            } else {
                 d.sceltac = "Dati assenti o malformattati";
             }
 
             //controllo importo
-            if (nodo.getElementsByTagName("importo").item(0) !=null) {
-                d.importo = nodo.getElementsByTagName("importo").item(0).getTextContent();
-            }else {
+            if (parent.getElementsByTagName("importo").item(0) != null) {
+                d.importo = parent.getElementsByTagName("importo").item(0).getTextContent();
+            } else {
                 d.importo = "0";
             }
 
             //controllo importo somme liquidate
-            if (nodo.getElementsByTagName("importoSommeLiquidate").item(0) !=null) {
-                d.importoSommeLiquidate = nodo.getElementsByTagName("importoSommeLiquidate").item(0).getTextContent();
-            }else {
+            if (parent.getElementsByTagName("importoSommeLiquidate").item(0) != null) {
+                d.importoSommeLiquidate = parent.getElementsByTagName("importoSommeLiquidate").item(0).getTextContent();
+            } else {
                 d.importoSommeLiquidate = "0";
             }
 
             //controllo tempi di completamento
-            if (nodo.getElementsByTagName("tempiCompletamento").item(0) !=null) {
-                Element  s = (Element) nodo.getElementsByTagName("tempiCompletamento").item(0);
+            if (parent.getElementsByTagName("tempiCompletamento").item(0) != null) {
+                Element s = (Element) parent.getElementsByTagName("tempiCompletamento").item(0);
                 if (s.getElementsByTagName("dataUltimazione").item(0) != null)
                     d.dataFine = s.getElementsByTagName("dataUltimazione").item(0).getTextContent();
                 else
@@ -136,16 +171,15 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
                     d.dataInizio = s.getElementsByTagName("dataInizio").item(0).getTextContent();
                 else
                     d.dataInizio = "Dati assenti o malformattati";
-            }else{
-                d.dataFine ="Dati assenti o malformattati";
-                d.dataInizio ="Dati assenti o malformattati";
+            } else {
+                d.dataFine = "Dati assenti o malformattati";
+                d.dataInizio = "Dati assenti o malformattati";
             }
 
             r.add(d);
         }
         return r;
     }
-
 
 
     public static class Data {

@@ -1,4 +1,4 @@
-package it.unive.dais.cevid.datadroid.template;
+package it.unive.dais.cevid.aac;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.coreutils.BuildConfig;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+
+import it.unive.dais.cevid.datadroid.template.R;
 
 
 /**

@@ -2,7 +2,7 @@
  * Questo package contiene le componenti Android riusabili.
  * Si tratta di classi che contengono già funzionalità base e possono essere riusate apportandovi modifiche
  */
-package it.unive.dais.cevid.datadroid.template;
+package it.unive.dais.cevid.aac;
 
 import android.Manifest;
 import android.app.Activity;
@@ -58,8 +58,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import it.unive.dais.cevid.aac.component.UniversityActivity;
 import it.unive.dais.cevid.aac.util.University;
+import it.unive.dais.cevid.datadroid.template.R;
 import it.unive.dais.cevid.lib.parser.DataParser;
 import it.unive.dais.cevid.lib.util.MapItem;
 

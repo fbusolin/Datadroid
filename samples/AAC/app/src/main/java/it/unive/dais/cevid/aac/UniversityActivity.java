@@ -1,11 +1,9 @@
-package it.unive.dais.cevid.aac.component;
+package it.unive.dais.cevid.aac;
 
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;

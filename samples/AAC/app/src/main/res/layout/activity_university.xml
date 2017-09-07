@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.unive.dais.cevid.aac.component.UniversityActivity">
+    tools:context="it.unive.dais.cevid.aac.UniversityActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

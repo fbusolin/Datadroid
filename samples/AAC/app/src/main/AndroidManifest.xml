@@ -34,7 +34,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name="it.unive.dais.cevid.aac.MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,20 +43,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".InfoActivity"
-            android:parentActivityName=".MapsActivity">
+            android:name="it.unive.dais.cevid.aac.InfoActivity"
+            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MapsActivity" />
+                android:value="it.unive.dais.cevid.aac.MapsActivity" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:parentActivityName=".MapsActivity">
+            android:name="it.unive.dais.cevid.aac.SettingsActivity"
+            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MapsActivity" />
+                android:value="it.unive.dais.cevid.aac.MapsActivity" />
         </activity>
-        <activity android:name="it.unive.dais.cevid.aac.component.UniversityActivity"></activity>
+        <activity android:name="it.unive.dais.cevid.aac.UniversityActivity"></activity>
     </application>
 
 </manifest>
