@@ -75,106 +75,49 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
             Data d = new Data();
 
             //controlli aggiudicatario
-            {
-                Element e = getElementByTag(parent, "aggiudicatario");
-                if (e != null) {
-                    d.aggiudicatario = getTextByTag(e, "ragioneSociale");
-                    d.codiceFiscaleAgg = getTextByTag(e, "codiceFiscale", "0");
-                } else {
-                    d.aggiudicatario = DATI_ASSENTI_O_MAL_FORMATTATI;
-                    d.codiceFiscaleAgg = "0";
-                }
-
-            }
-
-            {
-                d.oggetto = getTextByTag(parent, "oggetto");
-            }
-
-
-
-            // TODO: riscrivere il seguente codice con l'API nuova
-
-            if (parent.getElementsByTagName("aggiudicatario").item(0) != null) {
-                Element e = (Element) parent.getElementsByTagName("aggiudicatario").item(0);
-                if (e.getElementsByTagName("ragioneSociale").item(0) != null)
-                    d.aggiudicatario = e.getElementsByTagName("ragioneSociale").item(0).getTextContent();
-                else
-                    d.aggiudicatario = "Dati assenti o malformattati";
-
-                if (e.getElementsByTagName("codiceFiscale").item(0) != null)
-                    d.codiceFiscaleAgg = e.getElementsByTagName("codiceFiscale").item(0).getTextContent();
-                else
-                    d.codiceFiscaleAgg = "0";
+            Element e = getElementByTag(parent, "aggiudicatario");
+            if (e != null) {
+                d.aggiudicatario = getTextByTag(e, "ragioneSociale");
+                d.codiceFiscaleAgg = getTextByTag(e, "codiceFiscale", "0");
             } else {
-                d.aggiudicatario = "Dati assenti o malformattati";
+                d.aggiudicatario = DATI_ASSENTI_O_MAL_FORMATTATI;
                 d.codiceFiscaleAgg = "0";
             }
 
-
-            //controllo porponente
-            if (parent.getElementsByTagName("strutturaProponente").item(0) != null) {
-
-                Element s = (Element) parent.getElementsByTagName("strutturaProponente").item(0);
-                if (s.getElementsByTagName("ragioneSociale").item(0) != null)
-                    d.proponente = s.getElementsByTagName("ragioneSociale").item(0).getTextContent();
-                else
-                    d.proponente = "Dati assenti o malformattati";
-
-                if (s.getElementsByTagName("codiceFiscale").item(0) != null)
-                    d.codiceFiscaleProp = s.getElementsByTagName("codiceFiscale").item(0).getTextContent();
-                else
-                    d.codiceFiscaleProp = "0";
-
+            //controllo proponente
+            e = getElementByTag(parent, "proponente");
+            if (e != null) {
+                d.proponente = getTextByTag(e, "ragioneSociale");
+                d.codiceFiscaleProp = getTextByTag(e, "codiceFiscale", "0");
             } else {
-                d.aggiudicatario = "Dati assenti o malformattati";
-                d.codiceFiscaleAgg = "0";
-            }
-
-            //controllo oggetto
-            if (parent.getElementsByTagName("oggetto").item(0) != null) {
-                d.oggetto = parent.getElementsByTagName("oggetto").item(0).getTextContent();
-            } else {
-                d.oggetto = "Dati assenti o malformattati";
-            }
-
-            //controllo scelta contraente
-            if (parent.getElementsByTagName("sceltaContraente").item(0) != null) {
-                d.sceltac = parent.getElementsByTagName("sceltaContraente").item(0).getTextContent();
-            } else {
-                d.sceltac = "Dati assenti o malformattati";
-            }
-
-            //controllo importo
-            if (parent.getElementsByTagName("importo").item(0) != null) {
-                d.importo = parent.getElementsByTagName("importo").item(0).getTextContent();
-            } else {
-                d.importo = "0";
-            }
-
-            //controllo importo somme liquidate
-            if (parent.getElementsByTagName("importoSommeLiquidate").item(0) != null) {
-                d.importoSommeLiquidate = parent.getElementsByTagName("importoSommeLiquidate").item(0).getTextContent();
-            } else {
-                d.importoSommeLiquidate = "0";
+                d.proponente = DATI_ASSENTI_O_MAL_FORMATTATI;
+                d.codiceFiscaleProp = "0";
             }
 
             //controllo tempi di completamento
-            if (parent.getElementsByTagName("tempiCompletamento").item(0) != null) {
-                Element s = (Element) parent.getElementsByTagName("tempiCompletamento").item(0);
-                if (s.getElementsByTagName("dataUltimazione").item(0) != null)
-                    d.dataFine = s.getElementsByTagName("dataUltimazione").item(0).getTextContent();
-                else
-                    d.dataFine = "Dati assenti o malformattati";
-
-                if (s.getElementsByTagName("dataInizio").item(0) != null)
-                    d.dataInizio = s.getElementsByTagName("dataInizio").item(0).getTextContent();
-                else
-                    d.dataInizio = "Dati assenti o malformattati";
+            e = getElementByTag(parent, "tempiCompletamento");
+            if (e != null) {
+                d.dataInizio = getTextByTag(e, "dataInizio", "0");
+                d.dataFine= getTextByTag(e, "dataUltimazione", "0");
             } else {
-                d.dataFine = "Dati assenti o malformattati";
-                d.dataInizio = "Dati assenti o malformattati";
+                d.dataInizio = "0";
+                d.dataFine = "0";
             }
+
+            //controllo oggetto
+            d.oggetto = getTextByTag(parent, "oggetto");
+
+            //controllo scelta contraente
+            d.sceltac = getTextByTag(parent, "sceltaContraente");
+
+            //controllo importo
+            d.sceltac = getTextByTag(parent, "importo", "0");
+
+            //controllo importo somme liquidate
+            d.importoSommeLiquidate = getTextByTag(parent,"importoSommeLiquidate","0");
+
+            //controllo cig
+            d.cig = getTextByTag(parent, "cig", "0");
 
             r.add(d);
         }
