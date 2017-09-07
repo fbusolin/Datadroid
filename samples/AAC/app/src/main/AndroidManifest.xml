@@ -56,7 +56,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="it.unive.dais.cevid.aac.MapsActivity" />
         </activity>
-        <activity android:name="it.unive.dais.cevid.aac.UniversityActivity"></activity>
+        <activity
+            android:name="it.unive.dais.cevid.aac.UniversityActivity"
+            android:parentActivityName="it.unive.dais.cevid.aac.SearchActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="it.unive.dais.cevid.aac.SearchActivity" />
+        </activity>
+
+        <activity
+            android:name="it.unive.dais.cevid.aac.SearchActivity"
+            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="it.unive.dais.cevid.aac.MapsActivity" />
+        </activity>
     </application>
 
 </manifest>
