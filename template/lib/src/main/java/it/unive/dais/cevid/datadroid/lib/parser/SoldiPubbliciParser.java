@@ -19,12 +19,12 @@ import okhttp3.RequestBody;
 /**
  * Sottoclasse di {@code AbstractCsvParser} che implementa un donwloader e parser per il sito soldipubblici.gov.it.
  * Questa classe è usabile direttamente e non necessita di essere ereditata.
- * Non richiede il generic Data perché utilizza una classe innestata apposita per rappresentare il risultato della richiesta in maniera untyped ma generale tramite un dizionario.
+ * Non richiede il generic FiltrableData perché utilizza una classe innestata apposita per rappresentare il risultato della richiesta in maniera untyped ma generale tramite un dizionario.
  * Un esempio d'uso con un file CSV con header e virgole come separatore:
  * <blockquote><pre>
  * {@code
  * SoldiPubbliciParser parser = new SoldiPubbliciParser(1, 2);
- * List<SoldiPubbliciParser.Data> rows = parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+ * List<SoldiPubbliciParser.FiltrableData> rows = parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
  * for (CsvRowParser.Row row : rows) {
  *     String id = row.get("ID"), nome = row.get("NAME");
  *     // fai qualcosa con id e nome
@@ -118,6 +118,7 @@ public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbl
         public String importo_2015;
         public String importo_2016;
         public String importo_2017;
+
     }
 
 }

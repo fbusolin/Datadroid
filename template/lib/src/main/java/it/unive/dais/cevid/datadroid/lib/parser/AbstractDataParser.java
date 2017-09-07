@@ -85,7 +85,7 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
      * Metodo di cui è necessario fare override nelle sottoclassi.
      * Deve occuparsi del parsing vero e proprio.
 //     * @param input parametro di tipo Input.
-     * @return ritorna una lista di oggetti di tipo Data.
+     * @return ritorna una lista di oggetti di tipo FiltrableData.
      * @throws IOException lanciata se il parser incontra problemi.
      */
     @NonNull

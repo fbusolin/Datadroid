@@ -86,7 +86,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      * Implementa un parser linea-per-linea con progresso.
      * Se ridefinita da una sottoclasse, si deve occupare non solo del parsing ma anche della gestione
      * dell'header, sia in caso sia presente sia in caso non lo sia.
-     * @return lista di Data.
+     * @return lista di FiltrableData.
      * @throws IOException lanciata se il reader fallisce.
      */
     @Override
@@ -125,7 +125,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      * Parser di una singola linea.
      * L'implementazione di default invoca {@code parseColumns} passandogli la linea splittata tramite il separatore dato.
      * @param line stringa con la linea da parsare.
-     * @return ritorna un singolo oggetto di tipo Data.
+     * @return ritorna un singolo oggetto di tipo FiltrableData.
      * @throws ParseException lanciata se il parser fallisce.
      */
     @NonNull
@@ -136,7 +136,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
     /**
      * Questo metodo deve essere implementato nelle sottoclassi.
      * @param columns array di stringhe che contiene ogni colonna di una riga del CSV.
-     * @return ritorna un singolo oggetto di tipo Data.
+     * @return ritorna un singolo oggetto di tipo FiltrableData.
      * @throws ParseException lanciata se il parser fallisce.
      */
     @NonNull

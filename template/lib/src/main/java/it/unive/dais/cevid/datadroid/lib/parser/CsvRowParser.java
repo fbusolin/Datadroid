@@ -12,7 +12,7 @@ import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
 /**
  * Sottoclasse di {@code AbstractCsvParser} che implementa un parser riga-per-riga di CSV.
  * Questa classe è usabile direttamente e non necessita di essere ereditata.
- * Non utilizza il generic Data e non richiede la definizione di una classe per rappresentare le colonne
+ * Non utilizza il generic FiltrableData e non richiede la definizione di una classe per rappresentare le colonne
  * di una riga di CSV; viene invece utilizzata la classe {@code Row} che rappresenta tale informazione
  * in maniera untyped ma generale tramite un dizionario.
  * Un esempio d'uso con un file CSV con header e virgole come separatore:
