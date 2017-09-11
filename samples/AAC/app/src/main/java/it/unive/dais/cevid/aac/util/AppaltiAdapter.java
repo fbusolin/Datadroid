@@ -9,7 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 
-import it.unive.dais.cevid.datadroid.template.R;
+import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 
 

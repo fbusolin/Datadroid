@@ -1,7 +1,6 @@
 package it.unive.dais.cevid.aac.util;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
-import it.unive.dais.cevid.datadroid.template.R;
+import it.unive.dais.cevid.aac.R;
 
 /**
  * Created by Fonto on 11/09/17.

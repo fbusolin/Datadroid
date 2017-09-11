@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="it.unive.dais.cevid.datadroid.template">
+    package="it.unive.dais.cevid.aac">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -34,7 +34,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="it.unive.dais.cevid.aac.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,33 +43,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="it.unive.dais.cevid.aac.InfoActivity"
-            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
+            android:name=".InfoActivity"
+            android:parentActivityName=".MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.unive.dais.cevid.aac.MapsActivity" />
+                android:value=".MapsActivity" />
         </activity>
         <activity
-            android:name="it.unive.dais.cevid.aac.SettingsActivity"
-            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
+            android:name=".SettingsActivity"
+            android:parentActivityName=".MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.unive.dais.cevid.aac.MapsActivity" />
+                android:value=".MapsActivity" />
         </activity>
         <activity
-            android:name="it.unive.dais.cevid.aac.UniversityActivity"
-            android:parentActivityName="it.unive.dais.cevid.aac.SearchActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.unive.dais.cevid.aac.SearchActivity" />
+            android:name=".UniversityActivity"
+            android:parentActivityName=".SearchActivity">
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value=".SearchActivity" />-->
         </activity>
 
         <activity
-            android:name="it.unive.dais.cevid.aac.SearchActivity"
-            android:parentActivityName="it.unive.dais.cevid.aac.MapsActivity">
+            android:name=".SearchActivity"
+            android:parentActivityName=".MapsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="it.unive.dais.cevid.aac.MapsActivity" />
+                android:value=".MapsActivity" />
         </activity>
     </application>
 

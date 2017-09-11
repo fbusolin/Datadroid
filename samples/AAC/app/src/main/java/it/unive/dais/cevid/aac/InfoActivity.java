@@ -8,7 +8,7 @@ import android.support.coreutils.BuildConfig;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
-import it.unive.dais.cevid.datadroid.template.R;
+import it.unive.dais.cevid.aac.R;
 
 
 /**

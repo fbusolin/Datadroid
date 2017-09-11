@@ -16,7 +16,7 @@ import it.unive.dais.cevid.aac.util.AppaltiAdapter;
 import it.unive.dais.cevid.aac.util.SoldiPubbliciAdapter;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
-import it.unive.dais.cevid.datadroid.template.R;
+import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
 
@@ -44,8 +44,6 @@ public class UniversityActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_university);
         mode = (int) getIntent().getSerializableExtra(MODE);
-
-
 
         appaltiRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
         spRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
@@ -79,7 +77,6 @@ public class UniversityActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: "+ spList.size());
             soldiPubbliciAdapter = new SoldiPubbliciAdapter(spList);
             spRecyclerView.setAdapter(soldiPubbliciAdapter);
-
         }
 
     }

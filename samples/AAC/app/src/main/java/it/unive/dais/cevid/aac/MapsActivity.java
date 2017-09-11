@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
-import it.unive.dais.cevid.datadroid.template.R;
+import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.datadroid.lib.parser.DataParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
@@ -172,8 +172,9 @@ public class MapsActivity extends AppCompatActivity
         try {
             List<URL> urls = new ArrayList<>();
             urls.add(new URL("http://www.unive.it/avcp/datiAppalti2016.xml"));
-            uni.add(new University("Ca'Foscari", 45.4824602 ,12.1906404 , "Università degli studi di Venezia", urls , "000704968000000"));
+            uni.add(new University("Ca'Foscari", 45.4824602, 12.1906404, "Università degli studi di Venezia", urls , "000704968000000"));
         } catch (MalformedURLException e) {
+            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
             e.printStackTrace();
         }
 
@@ -185,8 +186,9 @@ public class MapsActivity extends AppCompatActivity
             urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s1_03.xml"));
             urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s2_01.xml"));
             urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s2_02.xml"));
-            uni.add(new University("Università di Padova", 45.406766, 11.8774462 , "Università degli studi di Padova", urls , "000058546000000"));
+            uni.add(new University("Università di Padova", 45.406766, 11.8774462, "Università degli studi di Padova", urls, "000058546000000"));
         } catch (MalformedURLException e) {
+            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
             e.printStackTrace();
         }
 
