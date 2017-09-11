@@ -26,15 +26,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:id="@+id/appalti_somma">
+            android:id="@+id/appalti_somma"
+            android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:text="@string/spese_totali"
                 />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:id="@+id/spesa_totale"
                 />
         </LinearLayout>

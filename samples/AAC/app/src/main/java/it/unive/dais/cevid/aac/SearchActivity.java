@@ -45,6 +45,8 @@ public class SearchActivity extends AppCompatActivity {
         try {
             appaltiList = appaltiParser.executeAndGet();
             spList = soldiPubbliciParser.executeAndGet();
+
+            Log.d(TAG, "onCreate: "+ spList.get(0).importo_2016);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,17 +57,17 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d(TAG, "onClick: va?");
-                ArrayList<AppaltiParser.Data> list = new ArrayList<>(appaltiList);
+                ArrayList<AppaltiParser.Data> appaltiFilteredList = new ArrayList<>(appaltiList);
 
                 if (!query.isEmpty()) {
 
                     if (query.matches("[0-9]+"))
-                        filterAppaltiByCode(Integer.getInteger(query), list);
+                        filterAppaltiByCode(Integer.getInteger(query), appaltiFilteredList);
                     else
-                        filterAppaltiByWord(query, list);
-                    Log.d(TAG, "onQueryTextSubmit: "+ list.size());
+                        filterAppaltiByWord(query, appaltiFilteredList);
+                    Log.d(TAG, "onQueryTextSubmit: "+ appaltiFilteredList.size());
                     Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                    intent.putExtra(UniversityActivity.APPALTI_LIST, list);
+                    intent.putExtra(UniversityActivity.APPALTI_LIST, appaltiFilteredList);
                     intent.putExtra(UniversityActivity.MODE, UniversityActivity.APPALTI_MODE);
                     startActivity(intent);
                     return true;
@@ -82,15 +84,16 @@ public class SearchActivity extends AppCompatActivity {
         soldipubbliciSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<SoldiPubbliciParser.Data> list = new ArrayList<>(spList);
+                ArrayList<SoldiPubbliciParser.Data> soldipubbliciFiltredList = new ArrayList<>(spList);
                 if (!query.isEmpty()){
                     if (query.matches("[0-9]+"))
-                        filterSoldiPubbliciByCode(Integer.getInteger(query), list);
+                        filterSoldiPubbliciByCode(Integer.getInteger(query), soldipubbliciFiltredList);
                     else
-                        filterSoldiPubbliciByWord(query, list);
+                        filterSoldiPubbliciByWord(query, soldipubbliciFiltredList);
 
+                    Log.d(TAG, "onQueryTextSubmit: "+ soldipubbliciFiltredList.size());
                     Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                    intent.putExtra(UniversityActivity.SP_LIST, list);
+                    intent.putExtra(UniversityActivity.SP_LIST, soldipubbliciFiltredList);
                     intent.putExtra(UniversityActivity.MODE, UniversityActivity.SOLDIPUBBLICI_MODE);
                     startActivity(intent);
                     return true;
@@ -111,7 +114,7 @@ public class SearchActivity extends AppCompatActivity {
         DataManipulation.filterByWords(list, w, new Function<SoldiPubbliciParser.Data, String>() {
             @Override
             public String eval(SoldiPubbliciParser.Data x) {
-                return x.descrizione_ente;
+                return x.descrizione_codice;
             }
         });
     }
