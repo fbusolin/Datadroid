@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbl
     }
 
 
-    public static class Data {
+    public static class Data implements Serializable {
         public String descrizione_codice;
         public String codice_siope;
         public String descrizione_ente;

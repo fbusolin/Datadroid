@@ -21,10 +21,11 @@
         android:textAlignment="center"/>
 
 
-    <SearchView
+    <android.support.v7.widget.SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"/>
+        android:layout_marginBottom="30dp"
+        android:id="@+id/ricerca_soldipubblici"/>
 
 
     <TextView
@@ -33,10 +34,11 @@
             android:text="@string/ricerca_appalti"
             android:textAlignment="center"/>
 
-    <SearchView
+    <android.support.v7.widget.SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"/>
+        android:layout_marginBottom="30dp"
+        android:id="@+id/ricerca_appalti"/>
 
 
     <Button

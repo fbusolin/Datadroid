@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
             d.sceltac = getTextByTag(parent, "sceltaContraente");
 
             //controllo importo
-            d.sceltac = getTextByTag(parent, "importo", "0");
+            d.importo = getTextByTag(parent, "importoAggiudicazione", "0");
 
             //controllo importo somme liquidate
             d.importoSommeLiquidate = getTextByTag(parent,"importoSommeLiquidate","0");
@@ -125,7 +126,7 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
     }
 
 
-    public static class Data {
+    public static class Data implements Serializable{
         public String cig;
         public String proponente;
         public String codiceFiscaleProp;

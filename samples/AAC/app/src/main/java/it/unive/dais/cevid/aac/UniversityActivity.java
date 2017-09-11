@@ -4,6 +4,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -12,6 +15,8 @@ import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.AppaltiAdapter;
 import it.unive.dais.cevid.aac.util.University;
+import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
+import it.unive.dais.cevid.datadroid.lib.util.Function;
 import it.unive.dais.cevid.datadroid.template.R;
 import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
@@ -19,12 +24,18 @@ import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
 
 public class UniversityActivity extends AppCompatActivity {
 
-    public static final String EXTRA_UNI = "UNI";
-    private University university;
-    private SoldiPubbliciParser soldiPubbliciParser;
-    private AppaltiParser appaltiParser;
+    public static final String APPALTI_LIST = "APPALTI_LIST";
+    public static final String SP_LIST = "SP_LIST";
+    public static final String MODE = "MODE";
+
+    public static final int APPALTI_MODE = 1;
+    public static final int SOLDIPUBBLICI_MODE = 2;
+
+    private int mode;
     private TextView descrizione;
     private TextView spesa2016;
+    private LinearLayout appaltiSum;
+    private TextView appaltiSumText;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private AppaltiAdapter appaltiAdapter;
@@ -34,48 +45,39 @@ public class UniversityActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_university);
-        university = (University) getIntent().getSerializableExtra(EXTRA_UNI);
+        mode = (int) getIntent().getSerializableExtra(MODE);
 
-        soldiPubbliciParser = new SoldiPubbliciParser(university.getCodiceComparto(),university.getCodiceEnte());
-        appaltiParser = new AppaltiParser(university.getUrls());
 
-        CharSequence ls = "Hardware";
-        List<CharSequence> ss = new ArrayList<>();
-        ss.add(ls);
-
-        List<SoldiPubbliciParser.Data> splList = null;
-        try {
-            splList = soldiPubbliciParser.executeAndGet();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        descrizione = (TextView) findViewById(R.id.descrizione_spesa_pubblica);
-        spesa2016 = (TextView) findViewById(R.id.spesa_pubblica_2016);
-
-        descrizione.setText(splList.get(0).descrizione_codice);
-        spesa2016.setText(splList.get(0).importo_2016+ " €");
 
         mRecyclerView= (RecyclerView) findViewById(R.id.lista_appalti);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        if (mode == APPALTI_MODE) {
 
-        try {
-            List<AppaltiParser.Data> appaltiList = appaltiParser.executeAndGet();
-            appaltiAdapter = new AppaltiAdapter(appaltiList);
-            mRecyclerView.setAdapter(appaltiAdapter);
+            try {
+                List<AppaltiParser.Data> appaltiList = (ArrayList<AppaltiParser.Data>) getIntent().getSerializableExtra(APPALTI_LIST);
+                appaltiAdapter = new AppaltiAdapter(appaltiList);
+                mRecyclerView.setAdapter(appaltiAdapter);
+                appaltiSum = (LinearLayout) findViewById(R.id.appalti_somma);
+                appaltiSum.setVisibility(View.VISIBLE);
 
+                appaltiSumText = (TextView) findViewById(R.id.spesa_totale);
+                Double sum = DataManipulation.sumBy(appaltiList, new Function<AppaltiParser.Data, Double>() {
+                    @Override
+                    public Double eval(AppaltiParser.Data x) {
+                        Log.d(TAG, "eval: "+ x.importo);
+                        return Double.valueOf(x.importo);
+                    }
+                });
+                Log.d(TAG, "onCreate: "+ sum);
+                appaltiSumText.setText(sum.toString());
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
 
     }
 }
