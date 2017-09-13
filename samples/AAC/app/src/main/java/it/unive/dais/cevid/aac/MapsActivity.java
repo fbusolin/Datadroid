@@ -59,7 +59,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
-import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.datadroid.lib.parser.DataParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
@@ -501,7 +500,7 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
-                intent.putExtra(SearchActivity.EXTRA_UNI, universityMap.get(marker.getId()));
+                intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
                 startActivity(intent);
             }
         });
@@ -580,7 +579,7 @@ public class MapsActivity extends AppCompatActivity
     @Nullable
     protected <I extends MapItem> Collection<Marker> putMarkersFromData(@NonNull DataParser<I, ?> parser) {
         try {
-            List<I> l = parser.executeAndGet();
+            List<I> l = parser.executeAndRetrieve();
             List<I> l2 = parser.asAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
             Log.i(TAG, String.format("parsed %d lines", l.size()));
             return putMarkersFromMapItems(l);

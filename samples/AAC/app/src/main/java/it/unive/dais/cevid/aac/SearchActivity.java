@@ -16,24 +16,27 @@ import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
-import it.unive.dais.cevid.aac.R;
 
 public class SearchActivity extends AppCompatActivity {
-    public static final String EXTRA_UNI = "UNI";
     private static final String TAG = "SearchActivity";
+
+    public static final String BUNDLE_UNI = "UNI";
+    private static final String BUNDLE_APPALTI_LIST = "APPALTI";
+    private static final String BUNDLE_SOLDIPUBBLICI_LIST = "SOLDIPUBBLICI";
+
     private University university;
-    private TextView title;
     private SearchView soldipubbliciSearch;
     private SearchView appaltiSearch;
     private SoldiPubbliciParser<?> soldiPubbliciParser;
     private AppaltiParser<?> appaltiParser;
-    private List<AppaltiParser.Data> appaltiList;
-    private List<SoldiPubbliciParser.Data> spList;
+//    private List<AppaltiParser.Data> appaltiList;
+//    private List<SoldiPubbliciParser.Data> soldipubbliciList;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.d(TAG, "onSaveInstanceState");
-        savedInstanceState.putSerializable(EXTRA_UNI, university);
+        savedInstanceState.putSerializable(BUNDLE_UNI, university);
+        savedInstanceState.putSerializable(BUNDLE_APPALTI_LIST, new ArrayList<>(appaltiList));
+        savedInstanceState.putSerializable(BUNDLE_SOLDIPUBBLICI_LIST, new ArrayList<>(soldipubbliciList));
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -41,35 +44,36 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
         if (savedInstanceState == null) {
-            Log.d(TAG, "first time");
-            university = (University) getIntent().getSerializableExtra(EXTRA_UNI);
+            // crea l'activity da zero
+            university = (University) getIntent().getSerializableExtra(BUNDLE_UNI);
+            soldiPubbliciParser = new SoldiPubbliciParser(University.getCodiceComparto(), university.getCodiceEnte());
+            appaltiParser = new AppaltiParser(university.getUrls());
+
+            try {
+                appaltiList = appaltiParser.executeAndRetrieve();
+                soldipubbliciList = soldiPubbliciParser.executeAndRetrieve();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
         else {
-            Log.d(TAG, "second time");
-            university = (University) savedInstanceState.getSerializable(EXTRA_UNI);
+            // crea l'activity deserializzando alcuni dati dal bundle
+            university = (University) savedInstanceState.getSerializable(BUNDLE_UNI);
         }
-        title = (TextView) findViewById(R.id.univeristy_name);
+        TextView title = (TextView) findViewById(R.id.univeristy_name);
         title.setText(university.getTitle());
-        soldiPubbliciParser = new SoldiPubbliciParser(University.getCodiceComparto(), university.getCodiceEnte());
-        appaltiParser = new AppaltiParser(university.getUrls());
 
-        try {
-            appaltiList = appaltiParser.executeAndGet();
-            spList = soldiPubbliciParser.executeAndGet();
-
-            Log.d(TAG, "onCreate: "+ spList.get(0).importo_2016);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        appaltiSearch =(SearchView) findViewById(R.id.ricerca_appalti);
+        appaltiSearch = (SearchView) findViewById(R.id.ricerca_appalti);
         soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
         appaltiSearch.onActionViewExpanded();
         soldipubbliciSearch.onActionViewExpanded();
         appaltiSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG, "onClick: va?");
                 ArrayList<AppaltiParser.Data> appaltiFilteredList = new ArrayList<>(appaltiList);
 
                 if (!query.isEmpty()) {
@@ -97,7 +101,7 @@ public class SearchActivity extends AppCompatActivity {
         soldipubbliciSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                ArrayList<SoldiPubbliciParser.Data> soldipubbliciFiltredList = new ArrayList<>(spList);
+                ArrayList<SoldiPubbliciParser.Data> soldipubbliciFiltredList = new ArrayList<>(soldipubbliciList);
                 if (!query.isEmpty()){
                     if (query.matches("[0-9]+"))
                         filterSoldiPubbliciByCode(Integer.parseInt(query), soldipubbliciFiltredList);

@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutionException;
  * @param <Data>
  */
 public interface DataParser<Data, Progress> {
-    List<Data> executeAndGet() throws ExecutionException, InterruptedException;
+    List<Data> executeAndRetrieve() throws ExecutionException, InterruptedException;
+    void execute();
+    List<Data> retrieve() throws ExecutionException, InterruptedException;
     AsyncTask<Void, Progress, List<Data>> asAsyncTask();
 }

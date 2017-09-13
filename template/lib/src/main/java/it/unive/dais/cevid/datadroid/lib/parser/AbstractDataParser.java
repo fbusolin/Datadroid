@@ -72,12 +72,16 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
     @Override
     @Nullable
     protected List<Data> doInBackground(Void... params) {
+        final String name = this.getClass().getSimpleName();
         try {
-            return parse();
+            Log.v(TAG, String.format("started parser %s", name));
+            List<Data> r = parse();
+            Log.v(TAG, String.format("parser %s finished (%d elements)", name, r.size()));
         } catch (IOException e) {
-            Log.e(TAG, String.format("exception caught while parsing: %s", e));
+            Log.e(TAG, String.format("exception caught during parser %s: %s", name, e));
             e.printStackTrace();
             return null;
+
         }
     }
 
@@ -93,10 +97,23 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
 
     @NonNull
     @Override
-    public List<Data> executeAndGet() throws ExecutionException, InterruptedException {
-        return executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+    public List<Data> executeAndRetrieve() throws ExecutionException, InterruptedException {
+        execute();
+        return retrieve();
     }
 
     @Override
-    public AsyncTask<Void, Progress, List<Data>> asAsyncTask() { return this; }
+    public void execute() {
+        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public List<Data> retrieve() throws ExecutionException, InterruptedException {
+        return get();
+    }
+
+    @Override
+    public AsyncTask<Void, Progress, List<Data>> asAsyncTask() {
+        return this;
+    }
 }
