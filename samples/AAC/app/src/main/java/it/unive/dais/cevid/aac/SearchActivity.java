@@ -128,7 +128,7 @@ public class SearchActivity extends AppCompatActivity {
             public String eval(SoldiPubbliciParser.Data x) {
                 return x.descrizione_codice;
             }
-        });
+        },false);
     }
 
     private void filterSoldiPubbliciByCode(int code, @NonNull List<SoldiPubbliciParser.Data> list){
@@ -147,7 +147,7 @@ public class SearchActivity extends AppCompatActivity {
             public String eval(AppaltiParser.Data x) {
                 return x.oggetto;
             }
-        });
+        }, false);
     }
 
     private void filterAppaltiByCode(int code, List<AppaltiParser.Data> list){

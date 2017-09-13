@@ -35,21 +35,30 @@ public class DataManipulation {
     }
 
 
-    public static <T> void filterByWords(@NonNull List<T> l, @NonNull final Collection<CharSequence> ss, @NonNull final Function<T, String> getText) {
+    public static <T> void filterByWords(@NonNull List<T> l, @NonNull final Collection<String> ss, @NonNull final Function<T, String> getText, final boolean isCaseSenstive) {
         filter(l, new Function<T, Boolean>() {
             @Override
             public Boolean eval(T x) {
-                final String s0 = getText.eval(x);
-                for (CharSequence s : ss) {
-                    if (s0.contains(s)) return true;
+                if (isCaseSenstive){
+                    final String s0 = getText.eval(x);
+                    for (String s : ss) {
+                        if (s0.contains(s)) return true;
+                    }
+                    return false;
                 }
-                return false;
+                else{
+                    final String s0 = getText.eval(x).toLowerCase();
+                    for (String s : ss) {
+                        if (s0.contains(s.toLowerCase())) return true;
+                    }
+                    return false;
+                }
             }
         });
     }
 
-    public static <T> void filterByWords(@NonNull List<T> l, @NonNull CharSequence[] ss, @NonNull Function<T, String> getText) {
-        filterByWords(l, Arrays.asList(ss), getText);
+    public static <T> void filterByWords(@NonNull List<T> l, @NonNull String[] ss, @NonNull Function<T, String> getText, boolean isCaseSensitive) {
+        filterByWords(l, Arrays.asList(ss), getText, isCaseSensitive);
     }
 
 //    public static void prova() {

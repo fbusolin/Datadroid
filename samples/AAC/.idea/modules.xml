@@ -3,10 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AAC.iml" filepath="$PROJECT_DIR$/AAC.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AAC.iml" filepath="$PROJECT_DIR$/AAC.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../template/lib/datadroid.lib.iml" filepath="$PROJECT_DIR$/../../template/lib/datadroid.lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../template/lib/datadroid.lib.iml" filepath="$PROJECT_DIR$/../../template/lib/datadroid.lib.iml" />
     </modules>
   </component>
