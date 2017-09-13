@@ -32,9 +32,10 @@ public class AppaltiAdapter extends RecyclerView.Adapter<AppaltiAdapter.AppaltoI
 
     @Override
     public void onBindViewHolder(AppaltoItem holder, int position) {
-        holder.importo.setText(dataList.get(position).importoSommeLiquidate);
+        holder.importo.setText(dataList.get(position).importo + "€");
         holder.aggiudicatario.setText(dataList.get(position).aggiudicatario);
         holder.oggetto.setText(dataList.get(position).oggetto);
+        holder.scelta.setText(dataList.get(position).sceltac);
     }
 
     @Override
@@ -44,13 +45,14 @@ public class AppaltiAdapter extends RecyclerView.Adapter<AppaltiAdapter.AppaltoI
 
     public class AppaltoItem extends RecyclerView.ViewHolder {
 
-        public TextView importo, oggetto, aggiudicatario;
+        public TextView importo, oggetto, aggiudicatario, scelta;
 
         public AppaltoItem(View itemView) {
             super(itemView);
             importo = (TextView) itemView.findViewById(R.id.text_importo);
             oggetto = (TextView) itemView.findViewById(R.id.text_oggetto);
             aggiudicatario = (TextView) itemView.findViewById(R.id.text_aggiudicatario);
+            scelta = (TextView) itemView.findViewById(R.id.text_scelta);
         }
     }
 }

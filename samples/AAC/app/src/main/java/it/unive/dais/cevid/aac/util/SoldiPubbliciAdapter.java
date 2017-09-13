@@ -34,7 +34,7 @@ public class SoldiPubbliciAdapter extends RecyclerView.Adapter<SoldiPubbliciAdap
 
     @Override
     public void onBindViewHolder(SoldiPubbliciItem holder, int position) {
-        holder.importo.setText(dataList.get(position).importo_2016);
+        holder.importo.setText(dataList.get(position).importo_2016 + "€");
         holder.voceSpesa.setText(dataList.get(position).descrizione_codice);
     }
 

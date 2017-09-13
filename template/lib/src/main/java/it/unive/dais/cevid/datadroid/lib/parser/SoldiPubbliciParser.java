@@ -91,16 +91,20 @@ public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbl
             d.importo_2013 = j.getString("importo_2013");
             d.importo_2014 = j.getString("importo_2014");
             d.importo_2015 = j.getString("importo_2015");
-            if (d.importo_2016!=null)
+            if (j.getString("importo_2016") != null && j.getString("importo_2016") != "null")
                 d.importo_2016 = j.getString("importo_2016");
-            else d.importo_2016 = "0";
+            else
+                d.importo_2016 = "0";
             d.importo_2017 = j.getString("importo_2017");
             d.ricerca = j.getString("ricerca");
             d.periodo = j.getString("periodo");
             r.add(d);
+            Log.d(TAG, "parseJSON: "+ d.importo_2016);
         }
         Log.d(TAG, String.format("parsed %d items", r.size()));
         return r;
+
+        // TODO: 13/09/17  aggiungere controlli
     }
 
 

@@ -192,6 +192,16 @@ public class MapsActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        //add Trento
+        try {
+            List<URL> urls = new ArrayList<>();
+            urls.add(new URL("http://approvvigionamenti.unitn.it/bandi-di-gara-e-contratti/2017/ricerca_2016.xml"));
+            urls.add(new URL("http://approvvigionamenti.unitn.it/bandi-di-gara-e-contratti/2017/amministrazione_2016.xml"));
+            uni.add(new University("Università di Trento", 46.0694828, 11.1188738, "Università degli studi di Trento", urls, "000067046000000"));
+        } catch (MalformedURLException e) {
+            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
+            e.printStackTrace();
+        }
 
     }
 

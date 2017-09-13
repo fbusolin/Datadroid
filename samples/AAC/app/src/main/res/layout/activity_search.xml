@@ -46,6 +46,7 @@
         android:layout_height="wrap_content"
         android:text="@string/licenze_software"
         android:layout_gravity="end"
+        android:visibility="gone"
         />
 
 </LinearLayout>
