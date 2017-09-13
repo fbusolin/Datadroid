@@ -65,7 +65,7 @@ public class SearchActivity extends AppCompatActivity {
         appaltiSearch =(SearchView) findViewById(R.id.ricerca_appalti);
         soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
         appaltiSearch.onActionViewExpanded();
-        soldipubbliciSearch.onActionViewCollapsed();
+        soldipubbliciSearch.onActionViewExpanded();
         appaltiSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
