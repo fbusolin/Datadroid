@@ -77,11 +77,11 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
             Log.v(TAG, String.format("started parser %s", name));
             List<Data> r = parse();
             Log.v(TAG, String.format("parser %s finished (%d elements)", name, r.size()));
+            return r;
         } catch (IOException e) {
             Log.e(TAG, String.format("exception caught during parser %s: %s", name, e));
             e.printStackTrace();
             return null;
-
         }
     }
 

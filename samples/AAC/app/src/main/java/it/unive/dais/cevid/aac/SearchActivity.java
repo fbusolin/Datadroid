@@ -29,8 +29,8 @@ public class SearchActivity extends AppCompatActivity {
     private SearchView appaltiSearch;
     private SoldiPubbliciParser<?> soldiPubbliciParser;
     private AppaltiParser<?> appaltiParser;
-//    private List<AppaltiParser.Data> appaltiList;
-//    private List<SoldiPubbliciParser.Data> soldipubbliciList;
+    private List<AppaltiParser.Data> appaltiList;
+    private List<SoldiPubbliciParser.Data> soldipubbliciList;
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
