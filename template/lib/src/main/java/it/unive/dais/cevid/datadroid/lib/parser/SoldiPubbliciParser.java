@@ -1,7 +1,6 @@
 package it.unive.dais.cevid.datadroid.lib.parser;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,14 +17,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 
 /**
- * Sottoclasse di {@code AbstractCsvParser} che implementa un donwloader e parser per il sito soldipubblici.gov.it.
+ * Sottoclasse di {@code AbstractAsyncCsvParser} che implementa un donwloader e parser per il sito soldipubblici.gov.it.
  * Questa classe è usabile direttamente e non necessita di essere ereditata.
  * Non richiede il generic FiltrableData perché utilizza una classe innestata apposita per rappresentare il risultato della richiesta in maniera untyped ma generale tramite un dizionario.
  * Un esempio d'uso con un file CSV con header e virgole come separatore:
  * <blockquote><pre>
  * {@code
- * SoldiPubbliciParser parser = new SoldiPubbliciParser(1, 2);
- * List<SoldiPubbliciParser.FiltrableData> rows = parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+ * SoldipubbliciParser parser = new SoldipubbliciParser(1, 2);
+ * List<SoldipubbliciParser.FiltrableData> rows = parser.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
  * for (CsvRowParser.Row row : rows) {
  *     String id = row.get("ID"), nome = row.get("NAME");
  *     // fai qualcosa con id e nome
@@ -36,21 +35,21 @@ import okhttp3.RequestBody;
  * @author Alvise Spanò, Università Ca' Foscari
  * @param <Progress>
  */
-public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbliciParser.Data, Progress> {
+public class SoldipubbliciParser<Progress> extends AbstractAsyncParser<SoldipubbliciParser.Data, Progress> {
 
-    private static final String TAG = "SoldiPubbliciParser";
+    private static final String TAG = "SoldipubbliciParser";
 
     protected String codiceComparto;
     protected String codiceEnte;
 
-    public SoldiPubbliciParser(String codiceComparto, String codiceEnte) {
+    public SoldipubbliciParser(String codiceComparto, String codiceEnte) {
         this.codiceComparto = codiceComparto;
         this.codiceEnte = codiceEnte;
     }
 
     @NonNull
     @Override
-    protected List<Data> parse() throws IOException {
+    public List<Data> parse() throws IOException {
         RequestBody fromRequest = new FormBody.Builder()
                 .add("codicecomparto", codiceComparto)
                 .add("codiceente", codiceEnte)
@@ -75,7 +74,6 @@ public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbl
         List<Data> r = new ArrayList<>();
         JSONObject jo = new JSONObject(data);
         JSONArray ja = jo.getJSONArray("data");
-        Log.d(TAG, "parse: "+ja.getJSONObject(1).toString() );
         for (int i =0; i< ja.length(); i++){
             JSONObject j = ja.getJSONObject(i);
             Data d = new Data();
@@ -99,9 +97,7 @@ public class SoldiPubbliciParser<Progress> extends AbstractDataParser<SoldiPubbl
             d.ricerca = j.getString("ricerca");
             d.periodo = j.getString("periodo");
             r.add(d);
-            Log.d(TAG, "parseJSON: "+ d.importo_2016);
         }
-        Log.d(TAG, String.format("parsed %d items", r.size()));
         return r;
 
         // TODO: 13/09/17  aggiungere controlli
