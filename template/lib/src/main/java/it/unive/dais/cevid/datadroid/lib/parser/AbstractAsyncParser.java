@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Clase astratta parametrica che rappresenta un parser di dati in senso generale, sottoclasse di AsyncTask.
@@ -24,9 +23,10 @@ import java.util.concurrent.ExecutionException;
  *                  Per ignorarlo passare il tipo Void come parametro Progress a questa classe.
  * @author Alvise Spanò, Università Ca' Foscari
  */
-public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void, Progress, List<Data>> implements DataParser<Data, Progress> {
+public abstract class AbstractAsyncParser<Data, Progress> implements AsyncParser<Data, Progress> {
 
-    private static final String TAG = "AbstractDataParser";
+    private static final String TAG = "AbstractAsyncParser";
+    protected final MyAsyncTask asyncTask = new MyAsyncTask();
 
     /**
      * Converte una URL in un {@code InputStreamReader}.
@@ -35,7 +35,7 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
      * al costruttore principale, come per esempio:
      * <blockquote><pre>
      * {@code
-     * public static class MyDataParser extends AbstractDataParser<MapItem, Void, InputStreamReader> {
+     * public static class MyDataParser extends AbstractAsyncParser<MapItem, Void, InputStreamReader> {
      *      protected MyDataParser(InputStreamReader rd) {
      *          super(rd);
      *      }
@@ -63,57 +63,60 @@ public abstract class AbstractDataParser<Data, Progress> extends AsyncTask<Void,
     }
 
     /**
-     * Metodo interno che invoca {@code parse} all'interno di un blocco try..catch.
-     * Non è necessario fare override a meno che non si desideri specificare un comportamento diverso.
-     * Il metodo da definire nelle sottoclassi è {@code parse}.
-     * @param params nessun parametro.
-     * @return la lista di dati prodotti da {@code parse}.
-     */
-    @Override
-    @Nullable
-    protected List<Data> doInBackground(Void... params) {
-        final String name = this.getClass().getSimpleName();
-        try {
-            Log.v(TAG, String.format("started parser %s", name));
-            List<Data> r = parse();
-            Log.v(TAG, String.format("parser %s finished (%d elements)", name, r.size()));
-            return r;
-        } catch (IOException e) {
-            Log.e(TAG, String.format("exception caught during parser %s: %s", name, e));
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
      * Metodo di cui è necessario fare override nelle sottoclassi.
      * Deve occuparsi del parsing vero e proprio.
 //     * @param input parametro di tipo Input.
      * @return ritorna una lista di oggetti di tipo FiltrableData.
      * @throws IOException lanciata se il parser incontra problemi.
      */
+    @Override
     @NonNull
-    protected abstract List<Data> parse() throws IOException;
+    public abstract List<Data> parse() throws IOException;
 
+    @Override
     @NonNull
+    public String getName() { return AbstractAsyncParser.class.getName(); }
+
+
+    /**
+     * Restituisce l'oggetto interno di tipo AsyncTask.
+     * @return oggetto di tipo AsyncTask.
+     */
     @Override
-    public List<Data> executeAndRetrieve() throws ExecutionException, InterruptedException {
-        execute();
-        return retrieve();
+    public AsyncTask<Void, Progress, List<Data>> getAsyncTask() {
+        return asyncTask;
     }
 
-    @Override
-    public void execute() {
-        executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+    protected class MyAsyncTask extends AsyncTask<Void, Progress, List<Data>> {
+        /**
+         * Metodo interno che invoca {@code parse} all'interno di un blocco try..catch.
+         * Non è necessario fare override a meno che non si desideri specificare un comportamento diverso.
+         * Il metodo da definire nelle sottoclassi è {@code parse}.
+         * @param params nessun parametro.
+         * @return la lista di dati prodotti da {@code parse}.
+         */
+        @Override
+        @Nullable
+        protected List<Data> doInBackground(Void... params) {
+            final String name = AbstractAsyncParser.this.getName();
+            try {
+                Log.v(TAG, String.format("started parser %s", name));
+                List<Data> r = parse();
+                Log.v(TAG, String.format("parser %s finished (%d elements)", name, r.size()));
+                return r;
+            } catch (IOException e) {
+                Log.e(TAG, String.format("exception caught during parser %s: %s", name, e));
+                e.printStackTrace();
+                return null;
+            }
+        }
 
-    @Override
-    public List<Data> retrieve() throws ExecutionException, InterruptedException {
-        return get();
-    }
-
-    @Override
-    public AsyncTask<Void, Progress, List<Data>> asAsyncTask() {
-        return this;
+        /**
+         * Questo metodo è solamente uno stub di {@code publishProgress}.
+         * E' necessario perché {@code publishProgress} ha visibilità {@code protected} e quindi non può essere chiamato
+         * dalle sottoclassi di {@code AbstractAsyncParser}.
+         * @param p
+         */
+        void publish(Progress... p) { this.publishProgress(p); }
     }
 }

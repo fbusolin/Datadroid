@@ -1,7 +1,8 @@
 package it.unive.dais.cevid.aac;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,74 +10,74 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 import it.unive.dais.cevid.aac.util.AppaltiAdapter;
 import it.unive.dais.cevid.aac.util.SoldiPubbliciAdapter;
+import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
+import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
-import it.unive.dais.cevid.aac.R;
-import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
-import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
 
 
 public class UniversityActivity extends AppCompatActivity {
 
-    public static final String APPALTI_LIST = "APPALTI_LIST";
-    public static final String SP_LIST = "SP_LIST";
+    public static final String LIST = "LIST";
     public static final String MODE = "MODE";
 
-    public static final int APPALTI_MODE = 1;
-    public static final int SOLDIPUBBLICI_MODE = 2;
+    enum Mode {APPALTI, SOLDIPUBBLICI }
 
     private int mode;
-    private LinearLayout appaltiSum;
-    private TextView appaltiSumText;
-    private RecyclerView appaltiRecyclerView, spRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private AppaltiAdapter appaltiAdapter;
-    private SoldiPubbliciAdapter soldiPubbliciAdapter;
     private static final String TAG = "UniversityActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_university);
-        mode = (int) getIntent().getSerializableExtra(MODE);
+        final Intent i = getIntent();
+        final Serializable l0 = i.getSerializableExtra(LIST);
+        final Mode mode = (Mode) i.getSerializableExtra(MODE);
 
-        appaltiRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
-        spRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
+        RecyclerView appaltiRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
+        RecyclerView soldipubbliciRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         appaltiRecyclerView.setLayoutManager(mLayoutManager);
 
-        if (mode == APPALTI_MODE) {
+        switch (mode) {
+            case APPALTI: {
+                final List<AppaltiParser.Data> l = (List<AppaltiParser.Data>) l0;
+                AppaltiAdapter appaltiAdapter = new AppaltiAdapter(l);
+                appaltiRecyclerView.setAdapter(appaltiAdapter);
 
-            List<AppaltiParser.Data> appaltiList = (ArrayList<AppaltiParser.Data>) getIntent().getSerializableExtra(APPALTI_LIST);
-            appaltiAdapter = new AppaltiAdapter(appaltiList);
-            appaltiRecyclerView.setAdapter(appaltiAdapter);
+                LinearLayout appaltiSum = (LinearLayout) findViewById(R.id.appalti_somma);
+                appaltiSum.setVisibility(View.VISIBLE);
+                TextView appaltiSumText = (TextView) findViewById(R.id.spesa_totale);
+                Double sum = DataManipulation.sumBy(l, new Function<AppaltiParser.Data, Double>() {
+                    @Override
+                    public Double eval(AppaltiParser.Data x) {
+                        Log.d(TAG, "eval: " + x.importo);
+                        return Double.valueOf(x.importo);
+                    }
+                });
+                Log.d(TAG, "onCreate: " + String.valueOf(sum));
+                appaltiSumText.setText(String.valueOf(sum));
+                break;
+            }
 
-            appaltiSum = (LinearLayout) findViewById(R.id.appalti_somma);
-            appaltiSum.setVisibility(View.VISIBLE);
-            appaltiSumText = (TextView) findViewById(R.id.spesa_totale);
-            Double sum = DataManipulation.sumBy(appaltiList, new Function<AppaltiParser.Data, Double>() {
-                @Override
-                public Double eval(AppaltiParser.Data x) {
-                    Log.d(TAG, "eval: "+ x.importo);
-                    return Double.valueOf(x.importo);
-                }
-            });
-            Log.d(TAG, "onCreate: "+ String.valueOf(sum));
-            appaltiSumText.setText(String.valueOf(sum));
+            case SOLDIPUBBLICI: {
+                final List<SoldipubbliciParser.Data> l = (List<SoldipubbliciParser.Data>) l0;
+                Log.d(TAG, "onCreate: " + l.size());
+                SoldiPubbliciAdapter soldiPubbliciAdapter = new SoldiPubbliciAdapter(l);
+                soldipubbliciRecyclerView.setAdapter(soldiPubbliciAdapter);
+                break;
+            }
 
-        }
+            default: {
+                Log.e(TAG, String.format("unknown mode: %d", mode));
+            }
 
-        if (mode == SOLDIPUBBLICI_MODE){
-            List<SoldiPubbliciParser.Data> spList = (ArrayList<SoldiPubbliciParser.Data> ) getIntent().getSerializableExtra(SP_LIST);
-            Log.d(TAG, "onCreate: "+ spList.size());
-            soldiPubbliciAdapter = new SoldiPubbliciAdapter(spList);
-            spRecyclerView.setAdapter(soldiPubbliciAdapter);
         }
 
     }

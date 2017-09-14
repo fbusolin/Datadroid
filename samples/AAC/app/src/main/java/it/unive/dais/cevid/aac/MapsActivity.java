@@ -49,6 +49,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
-import it.unive.dais.cevid.datadroid.lib.parser.DataParser;
+import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
 
@@ -577,17 +578,10 @@ public class MapsActivity extends AppCompatActivity
      * @return ritorna una collection di marker se tutto va bene; null altrimenti.
      */
     @Nullable
-    protected <I extends MapItem> Collection<Marker> putMarkersFromData(@NonNull DataParser<I, ?> parser) {
-        try {
-            List<I> l = parser.executeAndRetrieve();
-            List<I> l2 = parser.asAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
-            Log.i(TAG, String.format("parsed %d lines", l.size()));
-            return putMarkersFromMapItems(l);
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e(TAG, String.format("exception caught while parsing: %s", e));
-            e.printStackTrace();
-            return null;
-        }
+    protected <I extends MapItem> Collection<Marker> putMarkersFromData(@NonNull Parser<I> parser) throws IOException {
+        List<I> l = parser.parse();
+        Log.i(TAG, String.format("parsed %d lines", l.size()));
+        return putMarkersFromMapItems(l);
     }
 
     /**

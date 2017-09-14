@@ -13,7 +13,6 @@ import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 
 
-
 public class AppaltiAdapter extends RecyclerView.Adapter<AppaltiAdapter.AppaltoItem> {
 
     private List<AppaltiParser.Data> dataList;

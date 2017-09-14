@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import it.unive.dais.cevid.datadroid.lib.parser.SoldiPubbliciParser;
+import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.aac.R;
 
 /**
@@ -17,9 +17,9 @@ import it.unive.dais.cevid.aac.R;
 
 public class SoldiPubbliciAdapter extends RecyclerView.Adapter<SoldiPubbliciAdapter.SoldiPubbliciItem> {
     private static final String TAG = "SoldiPubbliciAdapter";
-    private List<SoldiPubbliciParser.Data> dataList;
+    private List<SoldipubbliciParser.Data> dataList;
 
-    public SoldiPubbliciAdapter(List<SoldiPubbliciParser.Data> dataList) {
+    public SoldiPubbliciAdapter(List<SoldipubbliciParser.Data> dataList) {
         this.dataList = dataList;
     }
 

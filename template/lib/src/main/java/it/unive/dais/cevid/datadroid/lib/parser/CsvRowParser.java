@@ -10,7 +10,7 @@ import java.text.ParseException;
 import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
 
 /**
- * Sottoclasse di {@code AbstractCsvParser} che implementa un parser riga-per-riga di CSV.
+ * Sottoclasse di {@code AbstractAsyncCsvParser} che implementa un parser riga-per-riga di CSV.
  * Questa classe è usabile direttamente e non necessita di essere ereditata.
  * Non utilizza il generic FiltrableData e non richiede la definizione di una classe per rappresentare le colonne
  * di una riga di CSV; viene invece utilizzata la classe {@code Row} che rappresenta tale informazione
@@ -29,7 +29,7 @@ import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
  *
  * @author Alvise Spanò, Università Ca' Foscari
  */
-public class CsvRowParser extends AbstractCsvParser<CsvRowParser.Row> {
+public class CsvRowParser extends AbstractAsyncCsvParser<CsvRowParser.Row> {
 
     private static final String TAG = "CsvRowParser";
 

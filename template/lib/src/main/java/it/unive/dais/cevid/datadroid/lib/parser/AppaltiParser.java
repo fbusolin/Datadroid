@@ -1,7 +1,6 @@
 package it.unive.dais.cevid.datadroid.lib.parser;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,7 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 
-public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Data, Progress> {
+public class AppaltiParser<Progress> extends AbstractAsyncParser<AppaltiParser.Data, Progress> {
     private static final String TAG = "AppaltiParser";
     private static final String DATI_ASSENTI_O_MAL_FORMATTATI = "Dati assenti o mal formattati";
 
@@ -33,22 +32,17 @@ public class AppaltiParser<Progress> extends AbstractDataParser<AppaltiParser.Da
 
     @NonNull
     @Override
-    protected List<Data> parse() throws IOException {
+    public List<Data> parse() throws IOException {
         NodeList nodes;
         List<Data> datalist = new ArrayList<>();
         for (URL url : urls) {
             try {
-                Log.d(TAG, "downloading " + url);
                 URLConnection conn = url.openConnection();
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document doc = builder.parse(conn.getInputStream());
                 nodes = doc.getElementsByTagName("lotto");
-
-                Log.d(TAG, "downloaded " + nodes.getLength() + " nodes");
-
                 datalist.addAll(parseNodes(nodes));
-
             } catch (ParserConfigurationException | SAXException e) {
                 throw new IOException(e);
             }

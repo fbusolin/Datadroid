@@ -20,7 +20,7 @@ import java.util.List;
  * @param <Progress> tipo Progress che viene inoltrato alla superclasse AsyncTask.
  * @author Alvise Spanò, Università Ca' Foscari
  */
-public abstract class AbstractJsonParser<Item, Progress> extends AbstractDataParser<Item, Progress> {
+public abstract class AbstractAsyncJsonParser<Item, Progress> extends AbstractAsyncParser<Item, Progress> {
 
     @NonNull protected final JsonReader reader;
 
@@ -28,7 +28,7 @@ public abstract class AbstractJsonParser<Item, Progress> extends AbstractDataPar
      * Costruttore protected via Reader.
      * @param rd oggetto Reader usato come input.
      */
-    protected AbstractJsonParser(@NonNull Reader rd) {
+    protected AbstractAsyncJsonParser(@NonNull Reader rd) {
         this.reader = new JsonReader(rd);
     }
 
@@ -36,7 +36,7 @@ public abstract class AbstractJsonParser<Item, Progress> extends AbstractDataPar
      * Costruttore protected via URL.
      * @param url oggetto URL usato come input.
      */
-    protected AbstractJsonParser(@NonNull URL url) throws IOException {
+    protected AbstractAsyncJsonParser(@NonNull URL url) throws IOException {
         this(urlToReader(url));
     }
 
@@ -47,7 +47,7 @@ public abstract class AbstractJsonParser<Item, Progress> extends AbstractDataPar
      */
     @Override
     @NonNull
-    protected List<Item> parse() throws IOException {
+    public List<Item> parse() throws IOException {
         List<Item> r = new ArrayList<>();
         reader.beginArray();
         while (reader.hasNext()) {

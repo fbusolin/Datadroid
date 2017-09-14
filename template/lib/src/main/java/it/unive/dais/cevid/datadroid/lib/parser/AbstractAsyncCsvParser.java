@@ -21,7 +21,7 @@ import it.unive.dais.cevid.datadroid.lib.util.Prelude;
 /**
  * Classe astratta che rappresenta la superclasse dei parser CSV.
  * Implementa già funzionalità base per la manipolazione di file CSV, richiedendo l'override del solo metodo {@code parseColumns}.
- * Il generic Progress della superclasse {@code AbstractDataParser} è Integer: questa classe astratta implementa il conteggio
+ * Il generic Progress della superclasse {@code AbstractAsyncParser} è Integer: questa classe astratta implementa il conteggio
  * delle linee durante il parsing, permettendo la customizzazione del progresso dell'operazione tramite override del metodo {@code onProgressUpdate},
  * secondo le linee guida di Android per la classe AsyncTask.
  * Ad esempio:
@@ -33,15 +33,15 @@ import it.unive.dais.cevid.datadroid.lib.util.Prelude;
  * }
  * </pre></blockquote>
  * <p>
- * Ancora, il generic Input della superclasse {@code AbstractDataParser} è {@code BufferedReader}, permettendo il parsing di lunghi file
+ * Ancora, il generic Input della superclasse {@code AbstractAsyncParser} è {@code BufferedReader}, permettendo il parsing di lunghi file
  * o stringhe contenenti numerose linee in formato CSV.
  *
  * @param <Data> tipo di una riga di dati.
  * @author Alvise Spanò, Università Ca' Foscari
  */
-public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, Integer> {
+public abstract class AbstractAsyncCsvParser<Data> extends AbstractAsyncParser<Data, Integer> {
 
-    private static final String TAG = "AbstractCsvParser";
+    private static final String TAG = "AbstractAsyncCsvParser";
 
     protected final boolean hasActualHeader;
     @NonNull protected final String sep;
@@ -54,7 +54,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      * @param hasActualHeader flag booleano che indica se il CSV ha un header alla prima riga.
      * @param sep       separatore tra le colonne del CSV (ad esempio il punto e virgola ";" oppure la virgola ",").
      */
-    protected AbstractCsvParser(@NonNull Reader rd, boolean hasActualHeader, @NonNull String sep) {
+    protected AbstractAsyncCsvParser(@NonNull Reader rd, boolean hasActualHeader, @NonNull String sep) {
         this.reader = new BufferedReader(rd);
         this.sep = sep;
         this.hasActualHeader = hasActualHeader;
@@ -67,7 +67,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      * @param sep       separatore tra le colonne del CSV (ad esempio il punto e virgola ";" oppure la virgola ",").
      * @throws FileNotFoundException lanciata se il file non esiste.
      */
-    protected AbstractCsvParser(@NonNull File file, boolean hasActualHeader, @NonNull String sep) throws FileNotFoundException {
+    protected AbstractAsyncCsvParser(@NonNull File file, boolean hasActualHeader, @NonNull String sep) throws FileNotFoundException {
         this(new FileReader(file), hasActualHeader, sep);
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      * @param sep       separatore tra le colonne del CSV (ad esempio il punto e virgola ";" oppure la virgola ",").
      * @throws IOException lanciata quando la conversione da URL a reader fallisce.
      */
-    protected AbstractCsvParser(@NonNull URL url, boolean hasActualHeader, @NonNull String sep) throws IOException {
+    protected AbstractAsyncCsvParser(@NonNull URL url, boolean hasActualHeader, @NonNull String sep) throws IOException {
         this(urlToReader(url), hasActualHeader, sep);
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
      */
     @Override
     @NonNull
-    protected List<Data> parse() throws IOException {
+    public List<Data> parse() throws IOException {
         if (hasActualHeader()) setHeader(reader.readLine().split(getSeparator()));
         List<Data> r = new ArrayList<>();
         String line;
@@ -100,7 +100,7 @@ public abstract class AbstractCsvParser<Data> extends AbstractDataParser<Data, I
             try {
                 if (linen == 0 && !hasActualHeader()) setDefaultHeader(line);
                 r.add(parseLine(line));
-                publishProgress(linen);
+                asyncTask.publish(linen);
             } catch (ParseException e) {
                 Log.w(TAG, String.format("recoverable parse error at line %d: %s", linen, e.getLocalizedMessage()));
             }

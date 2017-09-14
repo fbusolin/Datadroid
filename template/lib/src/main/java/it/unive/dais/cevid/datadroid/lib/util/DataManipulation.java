@@ -39,20 +39,12 @@ public class DataManipulation {
         filter(l, new Function<T, Boolean>() {
             @Override
             public Boolean eval(T x) {
-                if (isCaseSenstive){
-                    final String s0 = getText.eval(x);
-                    for (String s : ss) {
-                        if (s0.contains(s)) return true;
-                    }
-                    return false;
+                String s0 = getText.eval(x);
+                if (isCaseSenstive) s0 = s0.toLowerCase();
+                for (String s : ss) {
+                    if (s0.contains(isCaseSenstive ? s : s.toLowerCase())) return true;
                 }
-                else{
-                    final String s0 = getText.eval(x).toLowerCase();
-                    for (String s : ss) {
-                        if (s0.contains(s.toLowerCase())) return true;
-                    }
-                    return false;
-                }
+                return false;
             }
         });
     }
@@ -61,21 +53,4 @@ public class DataManipulation {
         filterByWords(l, Arrays.asList(ss), getText, isCaseSensitive);
     }
 
-//    public static void prova() {
-//        List<SoldiPubbliciParser.Data> l = new ArrayList<>();
-//
-//        filterByWords(l, new String[]{"pizza", "fichi"}, new Function<SoldiPubbliciParser.Data, String>() {
-//            @Override
-//            public String eval(SoldiPubbliciParser.Data x) {
-//                return x.descrizione_ente;
-//            }
-//        });
-//
-//        filterByWords(l, new String[]{"pizza", "fichi"}, new Function<SoldiPubbliciParser.Data, String>() {
-//            @Override
-//            public String eval(SoldiPubbliciParser.Data x) {
-//                return x.descrizione_codice;
-//            }
-//        });
-//    }
 }
