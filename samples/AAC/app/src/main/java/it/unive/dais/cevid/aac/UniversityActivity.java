@@ -22,26 +22,23 @@ import it.unive.dais.cevid.datadroid.lib.util.Function;
 
 
 public class UniversityActivity extends AppCompatActivity {
+    private static final String TAG = "UniversityActivity";
 
     public static final String LIST = "LIST";
     public static final String MODE = "MODE";
 
-    enum Mode {APPALTI, SOLDIPUBBLICI }
-
-    private int mode;
-    private static final String TAG = "UniversityActivity";
+    public enum Mode {APPALTI, SOLDI_PUBBLICI}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_university);
-        final Intent i = getIntent();
-        final Serializable l0 = i.getSerializableExtra(LIST);
-        final Mode mode = (Mode) i.getSerializableExtra(MODE);
+        Intent i = getIntent();
+        Serializable l0 = i.getSerializableExtra(LIST);
+        Mode mode = (Mode) i.getSerializableExtra(MODE);
 
         RecyclerView appaltiRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
-        RecyclerView soldipubbliciRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
-
+        RecyclerView soldipubbliciRecyclerView = (RecyclerView) findViewById(R.id.lista_soldipubblici);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         appaltiRecyclerView.setLayoutManager(mLayoutManager);
 
@@ -66,14 +63,14 @@ public class UniversityActivity extends AppCompatActivity {
                 break;
             }
 
-            case SOLDIPUBBLICI: {
+            case SOLDI_PUBBLICI: {
                 final List<SoldipubbliciParser.Data> l = (List<SoldipubbliciParser.Data>) l0;
                 Log.d(TAG, "onCreate: " + l.size());
                 SoldiPubbliciAdapter soldiPubbliciAdapter = new SoldiPubbliciAdapter(l);
                 soldipubbliciRecyclerView.setAdapter(soldiPubbliciAdapter);
                 break;
             }
-
+            
             default: {
                 Log.e(TAG, String.format("unknown mode: %d", mode));
             }

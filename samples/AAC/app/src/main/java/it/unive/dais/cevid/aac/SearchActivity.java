@@ -29,8 +29,6 @@ public class SearchActivity extends AppCompatActivity {
     private static final String BUNDLE_LIST = "LIST";
 
     private University university;
-    private SearchView soldipubbliciSearch;
-    private SearchView appaltiSearch;
     private SoldipubbliciParser<?> soldiPubbliciParser; // TODO: agguingere una progress bar al layout
     private AppaltiParser<?> appaltiParser;
     private LinearLayout mainView;
@@ -38,8 +36,8 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putSerializable(BUNDLE_UNI, university);
-        saveParserState(savedInstanceState, appaltiParser);
-        saveParserState(savedInstanceState, soldiPubbliciParser);
+//        saveParserState(savedInstanceState, appaltiParser);
+//        saveParserState(savedInstanceState, soldiPubbliciParser);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -70,11 +68,11 @@ public class SearchActivity extends AppCompatActivity {
         // TODO: salvare lo stato dei parser con un proxy serializzabile
         soldiPubbliciParser = new SoldipubbliciParser(University.getCodiceComparto(), university.getCodiceEnte());
         appaltiParser = new AppaltiParser(university.getUrls());
-        soldiPubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);   // partono i parser in background
+        soldiPubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         appaltiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        appaltiSearch = (SearchView) findViewById(R.id.ricerca_appalti);
-        soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
+        SearchView appaltiSearch = (SearchView) findViewById(R.id.ricerca_appalti);
+        SearchView soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
         appaltiSearch.onActionViewExpanded();
         soldipubbliciSearch.onActionViewExpanded();
 
@@ -92,7 +90,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 });
 
-        setOnQueryTextListener(soldipubbliciSearch, soldiPubbliciParser, UniversityActivity.Mode.SOLDIPUBBLICI,
+        setOnQueryTextListener(soldipubbliciSearch, soldiPubbliciParser, UniversityActivity.Mode.SOLDI_PUBBLICI,
                 new Function<SoldipubbliciParser.Data, String>() {
                     @Override
                     public String eval(SoldipubbliciParser.Data x) {
@@ -116,14 +114,14 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     if (!query.isEmpty()) {
                         final List<T> l = parser.getAsyncTask().get();
-                        if (l.size() == 0) {
-                            Snackbar.make(mainView, "Nessun risultato", Snackbar.LENGTH_SHORT).show();
-                            return false;
-                        }
                         if (query.matches("[0-9]+"))
                             DataManipulation.filterByCode(l, Integer.parseInt(query), getCode);
                         else
                             DataManipulation.filterByWords(l, query.split(" "), getText, false);
+                        if (l.size() == 0) {
+                            Snackbar.make(mainView, "La ricerca non ha dato nessun risultato.", Snackbar.LENGTH_SHORT).show();
+                            return false;
+                        }
                         Log.d(TAG, "onQueryTextSubmit: " + l.size());
                         Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
                         intent.putExtra(UniversityActivity.LIST, (Serializable) l);
@@ -144,6 +142,8 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 //    private void filterSoldiPubbliciByWord(String word, @NonNull List<SoldipubbliciParser.Data> list) {
 //        String[] w = word.split(" ");
