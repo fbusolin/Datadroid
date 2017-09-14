@@ -120,6 +120,7 @@ public class SearchActivity extends AppCompatActivity {
 
                     Log.d(TAG, "onQueryTextSubmit: " + soldipubbliciFiltredList.size());
                     if (soldipubbliciFiltredList.size() == 0){
+                        //// TODO: 14/09/17 x alvise 
                         Snackbar.make(mainView, "Nessun risultato", Snackbar.LENGTH_SHORT).show();
                         return false;
                     }else{
