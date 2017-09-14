@@ -2,10 +2,12 @@ package it.unive.dais.cevid.aac;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public class SearchActivity extends AppCompatActivity {
     private University university;
     private SearchView soldipubbliciSearch;
     private SearchView appaltiSearch;
+    private LinearLayout mainView;
     private SoldiPubbliciParser<?> soldiPubbliciParser;
     private AppaltiParser<?> appaltiParser;
     private List<AppaltiParser.Data> appaltiList;
@@ -44,6 +47,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        mainView = (LinearLayout) findViewById(R.id.search_activity);
 
         if (savedInstanceState == null) {
             // crea l'activity da zero
@@ -83,11 +87,17 @@ public class SearchActivity extends AppCompatActivity {
                     else
                         filterAppaltiByWord(query, appaltiFilteredList);
                     Log.d(TAG, "onQueryTextSubmit: "+ appaltiFilteredList.size());
-                    Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                    intent.putExtra(UniversityActivity.APPALTI_LIST, appaltiFilteredList);
-                    intent.putExtra(UniversityActivity.MODE, UniversityActivity.APPALTI_MODE);
-                    startActivity(intent);
-                    return true;
+                    if (appaltiFilteredList.size() == 0){
+                        Snackbar.make(mainView, "Nessun risultato", Snackbar.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    else{
+                        Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                        intent.putExtra(UniversityActivity.APPALTI_LIST, appaltiFilteredList);
+                        intent.putExtra(UniversityActivity.MODE, UniversityActivity.APPALTI_MODE);
+                        startActivity(intent);
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -109,11 +119,16 @@ public class SearchActivity extends AppCompatActivity {
                         filterSoldiPubbliciByWord(query, soldipubbliciFiltredList);
 
                     Log.d(TAG, "onQueryTextSubmit: " + soldipubbliciFiltredList.size());
-                    Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                    intent.putExtra(UniversityActivity.SP_LIST, soldipubbliciFiltredList);
-                    intent.putExtra(UniversityActivity.MODE, UniversityActivity.SOLDIPUBBLICI_MODE);
-                    startActivity(intent);
-                    return true;
+                    if (soldipubbliciFiltredList.size() == 0){
+                        Snackbar.make(mainView, "Nessun risultato", Snackbar.LENGTH_SHORT).show();
+                        return false;
+                    }else{
+                        Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                        intent.putExtra(UniversityActivity.SP_LIST, soldipubbliciFiltredList);
+                        intent.putExtra(UniversityActivity.MODE, UniversityActivity.SOLDIPUBBLICI_MODE);
+                        startActivity(intent);
+                        return true;
+                    }
                 }
                 return false;
             }
