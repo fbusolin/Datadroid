@@ -113,7 +113,7 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 try {
                     if (!query.isEmpty()) {
-                        final List<T> l = parser.getAsyncTask().get();
+                        final List<T> l = new ArrayList<T>(parser.getAsyncTask().get());
                         if (query.matches("[0-9]+"))
                             DataManipulation.filterByCode(l, Integer.parseInt(query), getCode);
                         else
