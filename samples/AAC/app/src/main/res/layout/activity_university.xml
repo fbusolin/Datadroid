@@ -35,14 +35,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/spese_totali"
-                android:textAlignment="center" />
+                android:layout_margin="10dp"/>
 
             <TextView
                 android:id="@+id/spesa_totale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="20dp" />
+                android:textSize="20dp"
+                android:layout_margin="10dp"/>
         </LinearLayout>
 
 

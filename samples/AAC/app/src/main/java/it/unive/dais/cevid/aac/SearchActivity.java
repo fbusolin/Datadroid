@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextClock;
 import android.widget.TextView;
 
 import java.io.Serializable;
@@ -32,6 +35,8 @@ public class SearchActivity extends AppCompatActivity {
     private SoldipubbliciParser<?> soldiPubbliciParser; // TODO: agguingere una progress bar al layout
     private AppaltiParser<?> appaltiParser;
     private LinearLayout mainView;
+    private String soldiPubbliciText = " ";
+    private String appaltiText = " ";
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -72,11 +77,11 @@ public class SearchActivity extends AppCompatActivity {
         appaltiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         SearchView appaltiSearch = (SearchView) findViewById(R.id.ricerca_appalti);
-        SearchView soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
+        final SearchView soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
         appaltiSearch.onActionViewExpanded();
         soldipubbliciSearch.onActionViewExpanded();
 
-        setOnQueryTextListener(appaltiSearch, appaltiParser, UniversityActivity.Mode.APPALTI,
+        setOnQueryTextListener(appaltiSearch, appaltiParser,UniversityActivity.LIST_APPALTI, UniversityActivity.Mode.APPALTI,
                 new Function<AppaltiParser.Data, String>() {
                     @Override
                     public String eval(AppaltiParser.Data x) {
@@ -90,7 +95,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 });
 
-        setOnQueryTextListener(soldipubbliciSearch, soldiPubbliciParser, UniversityActivity.Mode.SOLDI_PUBBLICI,
+        setOnQueryTextListener(soldipubbliciSearch, soldiPubbliciParser,UniversityActivity.LIST_SOLDIPUBBLICI, UniversityActivity.Mode.SOLDI_PUBBLICI,
                 new Function<SoldipubbliciParser.Data, String>() {
                     @Override
                     public String eval(SoldipubbliciParser.Data x) {
@@ -103,10 +108,70 @@ public class SearchActivity extends AppCompatActivity {
                         return Integer.parseInt(x.codice_siope);
                     }
                 });
+
+        Button button = (Button) findViewById(R.id.button_combine_data);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    List<AppaltiParser.Data> coboAppaltiList = new ArrayList<>(appaltiParser.getAsyncTask().get());
+                    List<SoldipubbliciParser.Data> comboSPList = new ArrayList<>(soldiPubbliciParser.getAsyncTask().get());
+
+                    if (!soldiPubbliciText.isEmpty() && !appaltiText.isEmpty()){
+                        if (soldiPubbliciText.matches("[0-9]+"))
+                            DataManipulation.filterByCode(comboSPList, Integer.parseInt(soldiPubbliciText),  new Function<SoldipubbliciParser.Data, Integer>() {
+                                @Override
+                                public Integer eval(SoldipubbliciParser.Data x) {
+                                    return Integer.parseInt(x.codice_siope);
+                                }
+                            });
+                        else
+                            DataManipulation.filterByWords(comboSPList, soldiPubbliciText.split(" "),new Function<SoldipubbliciParser.Data, String>() {
+                                @Override
+                                public String eval(SoldipubbliciParser.Data x) {
+                                    return x.descrizione_codice;
+                                }
+                            },false);
+
+                        if (appaltiText.matches("[0-9]+"))
+                            DataManipulation.filterByCode(coboAppaltiList, Integer.parseInt(appaltiText), new Function<AppaltiParser.Data, Integer>() {
+                                @Override
+                                public Integer eval(AppaltiParser.Data x) {
+                                    return Integer.parseInt(x.cig);
+                                }
+                            });
+                        else
+                            DataManipulation.filterByWords(coboAppaltiList, appaltiText.split(" "), new Function<AppaltiParser.Data, String>() {
+                                        @Override
+                                        public String eval(AppaltiParser.Data x) {
+                                            return x.oggetto;
+                                        }
+                                    },false);
+
+                        Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                        intent.putExtra(UniversityActivity.LIST_APPALTI, (Serializable) coboAppaltiList);
+                        intent.putExtra(UniversityActivity.LIST_SOLDIPUBBLICI, (Serializable) comboSPList);
+                        intent.putExtra(UniversityActivity.MODE, UniversityActivity.Mode.COMBINE);
+                        startActivity(intent);
+                    }
+                    else
+                        Snackbar.make(mainView, "Compilare entrambi i campi di testi", Snackbar.LENGTH_SHORT).show();
+
+
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
 
-    private <T> void setOnQueryTextListener(SearchView search, final AsyncParser<T, ?> parser, final UniversityActivity.Mode mode,
+    private <T> void setOnQueryTextListener(SearchView search, final AsyncParser<T, ?> parser,final String listType, final UniversityActivity.Mode mode,
                                             final Function<T, String> getText, final Function<T, Integer> getCode) {
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -124,7 +189,7 @@ public class SearchActivity extends AppCompatActivity {
                         else {
                             Log.d(TAG, "onQueryTextSubmit: " + l.size());
                             Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                            intent.putExtra(UniversityActivity.LIST, (Serializable) l);
+                            intent.putExtra(listType, (Serializable) l);
                             intent.putExtra(UniversityActivity.MODE, mode);
                             startActivity(intent);
                         }
@@ -138,6 +203,20 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                switch (mode){
+                    case APPALTI: {
+                        appaltiText = newText;
+                        break;
+                    }
+                    case SOLDI_PUBBLICI:{
+                        soldiPubbliciText = newText;
+                        break;
+                    }
+                    default:{
+                        appaltiText = " ";
+                        soldiPubbliciText = " ";
+                    }
+                }
                 return false;
             }
         });
