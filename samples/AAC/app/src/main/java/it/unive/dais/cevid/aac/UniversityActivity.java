@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import it.unive.dais.cevid.aac.util.AppaltiAdapter;
@@ -36,43 +37,40 @@ public class UniversityActivity extends AppCompatActivity {
         Intent i = getIntent();
         Serializable l0 = i.getSerializableExtra(LIST);
         Mode mode = (Mode) i.getSerializableExtra(MODE);
-
-        RecyclerView appaltiRecyclerView = (RecyclerView) findViewById(R.id.lista_appalti);
-        RecyclerView soldipubbliciRecyclerView = (RecyclerView) findViewById(R.id.lista_soldipubblici);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        appaltiRecyclerView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
         switch (mode) {
             case APPALTI: {
-                final List<AppaltiParser.Data> l = (List<AppaltiParser.Data>) l0;
-                AppaltiAdapter appaltiAdapter = new AppaltiAdapter(l);
-                appaltiRecyclerView.setAdapter(appaltiAdapter);
+                RecyclerView v = (RecyclerView) findViewById(R.id.lista_appalti);
+                v.setLayoutManager(layoutManager);
+                List<AppaltiParser.Data> l = (List<AppaltiParser.Data>) l0;
+                AppaltiAdapter ad = new AppaltiAdapter(l);
+                v.setAdapter(ad);
 
-                LinearLayout appaltiSum = (LinearLayout) findViewById(R.id.appalti_somma);
-                appaltiSum.setVisibility(View.VISIBLE);
-                TextView appaltiSumText = (TextView) findViewById(R.id.spesa_totale);
+                LinearLayout lo = (LinearLayout) findViewById(R.id.appalti_somma);
+                lo.setVisibility(View.VISIBLE);
+                TextView tv = (TextView) findViewById(R.id.spesa_totale);
                 Double sum = DataManipulation.sumBy(l, new Function<AppaltiParser.Data, Double>() {
                     @Override
                     public Double eval(AppaltiParser.Data x) {
-                        Log.d(TAG, "eval: " + x.importo);
                         return Double.valueOf(x.importo);
                     }
                 });
-                Log.d(TAG, "onCreate: " + String.valueOf(sum));
-                appaltiSumText.setText(String.valueOf(sum));
+                tv.setText(String.valueOf(sum));
                 break;
             }
 
             case SOLDI_PUBBLICI: {
-                final List<SoldipubbliciParser.Data> l = (List<SoldipubbliciParser.Data>) l0;
-                Log.d(TAG, "onCreate: " + l.size());
+                RecyclerView v = (RecyclerView) findViewById(R.id.lista_soldipubblici);
+                v.setLayoutManager(layoutManager);
+                List<SoldipubbliciParser.Data> l = (List<SoldipubbliciParser.Data>) l0;
                 SoldiPubbliciAdapter soldiPubbliciAdapter = new SoldiPubbliciAdapter(l);
-                soldipubbliciRecyclerView.setAdapter(soldiPubbliciAdapter);
+                v.setAdapter(soldiPubbliciAdapter);
                 break;
             }
             
             default: {
-                Log.e(TAG, String.format("unknown mode: %d", mode));
+                Log.e(TAG, String.format("unknown mode: %d", mode.ordinal()));
             }
 
         }

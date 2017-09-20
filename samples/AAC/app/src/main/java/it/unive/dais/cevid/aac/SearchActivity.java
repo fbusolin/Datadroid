@@ -120,20 +120,20 @@ public class SearchActivity extends AppCompatActivity {
                             DataManipulation.filterByWords(l, query.split(" "), getText, false);
                         if (l.size() == 0) {
                             Snackbar.make(mainView, "La ricerca non ha dato nessun risultato.", Snackbar.LENGTH_SHORT).show();
-                            return false;
                         }
-                        Log.d(TAG, "onQueryTextSubmit: " + l.size());
-                        Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                        intent.putExtra(UniversityActivity.LIST, (Serializable) l);
-                        intent.putExtra(UniversityActivity.MODE, mode);
-                        startActivity(intent);
-                        return true;
+                        else {
+                            Log.d(TAG, "onQueryTextSubmit: " + l.size());
+                            Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                            intent.putExtra(UniversityActivity.LIST, (Serializable) l);
+                            intent.putExtra(UniversityActivity.MODE, mode);
+                            startActivity(intent);
+                        }
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     Log.e(TAG, String.format("exception caught during parser %s", parser.getName()));
                     e.printStackTrace();
                 }
-                return false;
+                return true;
             }
 
             @Override

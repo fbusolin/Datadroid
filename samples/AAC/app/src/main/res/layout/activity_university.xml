@@ -9,9 +9,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_margin="10dp"
-        >
+        android:orientation="vertical">
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -21,27 +21,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:visibility="visible"/>
+                android:visibility="visible" />
         </FrameLayout>
+
         <LinearLayout
+            android:id="@+id/appalti_somma"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:id="@+id/appalti_somma"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"
                 android:text="@string/spese_totali"
-                />
+                android:textAlignment="center" />
+
             <TextView
+                android:id="@+id/spesa_totale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:id="@+id/spesa_totale"
-                android:textSize="20dp"
-                />
+                android:textSize="20dp" />
         </LinearLayout>
 
 
@@ -54,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:visibility="visible"/>
+                android:visibility="visible" />
         </FrameLayout>
     </LinearLayout>
 
