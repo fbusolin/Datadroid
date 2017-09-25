@@ -20,26 +20,39 @@ import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
+import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
 
 
 public class UniversityActivity extends AppCompatActivity {
     private static final String TAG = "UniversityActivity";
 
     public static final String LIST_APPALTI = "LIST_APPALTI";
-    public static final String LIST_SOLDIPUBBLICI = "LIST_SP";
-    public static final String MODE = "MODE";
+    public static final String LIST_SOLDIPUBBLICI = "LIST_SOLDIPUBBLICI";
+//    private static final String MODE = "MODE";
 
-    public enum Mode {APPALTI, SOLDI_PUBBLICI, COMBINE}
+    private enum Mode {
+        APPALTI,
+        SOLDI_PUBBLICI,
+        COMBINE,
+        UNKNOWN;
+
+        public static Mode ofIntent(Intent i) {
+            if (i.hasExtra(LIST_APPALTI) && i.hasExtra(LIST_SOLDIPUBBLICI)) return COMBINE;
+            if (i.hasExtra(LIST_APPALTI)) return APPALTI;
+            if (i.hasExtra(LIST_SOLDIPUBBLICI)) return SOLDI_PUBBLICI;
+            return UNKNOWN; //throw new UnexpectedException("Unknown intent labels would lead to unsupported mode");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_university);
         Intent i = getIntent();
-        Mode mode = (Mode) i.getSerializableExtra(MODE);
+//        Mode mode = (Mode) i.getSerializableExtra(MODE);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
-        switch (mode) {
+        switch (Mode.ofIntent(i)) {
             case APPALTI: {
                 RecyclerView v = (RecyclerView) findViewById(R.id.lista_appalti);
                 v.setLayoutManager(layoutManager);
@@ -88,7 +101,6 @@ public class UniversityActivity extends AppCompatActivity {
                 v1.setAdapter(soldiPubbliciAdapter);
                 v1.setVisibility(View.VISIBLE);
 
-
                 AppaltiAdapter appaltiAdapter = new AppaltiAdapter(l3);
                 v2.setAdapter(appaltiAdapter);
                 v2.setVisibility(View.VISIBLE);
@@ -107,11 +119,13 @@ public class UniversityActivity extends AppCompatActivity {
             }
             
             default: {
-                Log.e(TAG, String.format("unknown mode: %d", mode.ordinal()));
+                Log.e(TAG, "unknown mode");
             }
 
         }
 
     }
+
+
 }
 

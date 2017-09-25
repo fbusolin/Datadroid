@@ -64,11 +64,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SearchActivity" />
         </activity>
-
         <activity
             android:name=".SearchActivity"
             android:parentActivityName=".MapsActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
+            android:clickable="true"
+            android:focusableInTouchMode="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MapsActivity" />

@@ -1,5 +1,6 @@
 package it.unive.dais.cevid.aac;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
@@ -8,9 +9,9 @@ import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextClock;
 import android.widget.TextView;
 
 import java.io.Serializable;
@@ -46,9 +47,17 @@ public class SearchActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    // TODO: finire questo
     private <T> void saveParserState(Bundle savedInstanceState, AsyncParser<T, ?> parser) {
         try {
-            savedInstanceState.putSerializable(BUNDLE_LIST, new ArrayList<T>(parser.getAsyncTask().get()));
+            AsyncTask<Void, ?, List<T>> p = parser.getAsyncTask();
+            switch (p.getStatus()) {
+                case FINISHED:
+                    savedInstanceState.putSerializable(BUNDLE_LIST, new ArrayList<T>(p.get()));
+                    break;
+                default:
+                    break;
+            }
         } catch (InterruptedException | ExecutionException e) {
             Log.e(TAG, String.format("parser %s failed", parser.getClass().getSimpleName()));
         }
@@ -77,189 +86,149 @@ public class SearchActivity extends AppCompatActivity {
         appaltiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         SearchView appaltiSearch = (SearchView) findViewById(R.id.ricerca_appalti);
-        final SearchView soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
+        SearchView soldipubbliciSearch = (SearchView) findViewById(R.id.ricerca_soldipubblici);
         appaltiSearch.onActionViewExpanded();
         soldipubbliciSearch.onActionViewExpanded();
 
-        setOnQueryTextListener(appaltiSearch, appaltiParser,UniversityActivity.LIST_APPALTI, UniversityActivity.Mode.APPALTI,
-                new Function<AppaltiParser.Data, String>() {
-                    @Override
-                    public String eval(AppaltiParser.Data x) {
-                        return x.oggetto;
-                    }
-                },
-                new Function<AppaltiParser.Data, Integer>() {
-                    @Override
-                    public Integer eval(AppaltiParser.Data x) {
-                        return Integer.parseInt(x.cig);
-                    }
-                });
+        setSingleListener(appaltiSearch, appaltiParser, UniversityActivity.LIST_APPALTI, Appalti_getText, Appalti_getCode, new Function<String, Void>() {
+            @Override
+            public Void eval(String x) {
+                SearchActivity.this.appaltiText = x;
+                return null;
+            }
+        });
+        setSingleListener(soldipubbliciSearch, soldiPubbliciParser, UniversityActivity.LIST_SOLDIPUBBLICI, Soldipubblici_getText, Soldipubblici_getCode, new Function<String, Void>() {
+            @Override
+            public Void eval(String x) {
+                SearchActivity.this.soldiPubbliciText = x;
+                return null;
+            }
+        });
 
-        setOnQueryTextListener(soldipubbliciSearch, soldiPubbliciParser,UniversityActivity.LIST_SOLDIPUBBLICI, UniversityActivity.Mode.SOLDI_PUBBLICI,
-                new Function<SoldipubbliciParser.Data, String>() {
-                    @Override
-                    public String eval(SoldipubbliciParser.Data x) {
-                        return x.descrizione_codice;
-                    }
-                },
-                new Function<SoldipubbliciParser.Data, Integer>() {
-                    @Override
-                    public Integer eval(SoldipubbliciParser.Data x) {
-                        return Integer.parseInt(x.codice_siope);
-                    }
-                });
-
-        Button button = (Button) findViewById(R.id.button_combine_data);
-
-        button.setOnClickListener(new View.OnClickListener() {
+        Button combineButton = (Button) findViewById(R.id.button_combine_data);
+        combineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    List<AppaltiParser.Data> coboAppaltiList = new ArrayList<>(appaltiParser.getAsyncTask().get());
-                    List<SoldipubbliciParser.Data> comboSPList = new ArrayList<>(soldiPubbliciParser.getAsyncTask().get());
+                Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                boolean r1 = processQuery(appaltiParser, appaltiText, intent, UniversityActivity.LIST_APPALTI, Appalti_getText, Appalti_getCode),
+                        r2 = processQuery(soldiPubbliciParser, soldiPubbliciText, intent, UniversityActivity.LIST_SOLDIPUBBLICI, Soldipubblici_getText, Soldipubblici_getCode);
+                if (r1 && r2)
+                    startActivity(intent);
+                else
+                    alert("Compilare entrambi i campi di testo ed assicurarsi che diano risultati per richiedere una ricerca combinata.");
+            }
+        });
 
-                    if (!soldiPubbliciText.isEmpty() && !appaltiText.isEmpty()){
-                        if (soldiPubbliciText.matches("[0-9]+"))
-                            DataManipulation.filterByCode(comboSPList, Integer.parseInt(soldiPubbliciText),  new Function<SoldipubbliciParser.Data, Integer>() {
-                                @Override
-                                public Integer eval(SoldipubbliciParser.Data x) {
-                                    return Integer.parseInt(x.codice_siope);
-                                }
-                            });
-                        else
-                            DataManipulation.filterByWords(comboSPList, soldiPubbliciText.split(" "),new Function<SoldipubbliciParser.Data, String>() {
-                                @Override
-                                public String eval(SoldipubbliciParser.Data x) {
-                                    return x.descrizione_codice;
-                                }
-                            },false);
-
-                        if (appaltiText.matches("[0-9]+"))
-                            DataManipulation.filterByCode(coboAppaltiList, Integer.parseInt(appaltiText), new Function<AppaltiParser.Data, Integer>() {
-                                @Override
-                                public Integer eval(AppaltiParser.Data x) {
-                                    return Integer.parseInt(x.cig);
-                                }
-                            });
-                        else
-                            DataManipulation.filterByWords(coboAppaltiList, appaltiText.split(" "), new Function<AppaltiParser.Data, String>() {
-                                        @Override
-                                        public String eval(AppaltiParser.Data x) {
-                                            return x.oggetto;
-                                        }
-                                    },false);
-
-                        Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                        intent.putExtra(UniversityActivity.LIST_APPALTI, (Serializable) coboAppaltiList);
-                        intent.putExtra(UniversityActivity.LIST_SOLDIPUBBLICI, (Serializable) comboSPList);
-                        intent.putExtra(UniversityActivity.MODE, UniversityActivity.Mode.COMBINE);
-                        startActivity(intent);
-                    }
-                    else
-                        Snackbar.make(mainView, "Compilare entrambi i campi di testi", Snackbar.LENGTH_SHORT).show();
-
-
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+        mainView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    hideKeyboard(v);
                 }
             }
         });
 
     }
 
+//    @Override
+//    public void onFocusChange(View v, boolean hasFocus) {
+//        if (!hasFocus) {
+//            hideKeyboard(v);
+//        }
+//    }
 
-    private <T> void setOnQueryTextListener(SearchView search, final AsyncParser<T, ?> parser,final String listType, final UniversityActivity.Mode mode,
-                                            final Function<T, String> getText, final Function<T, Integer> getCode) {
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                try {
-                    if (!query.isEmpty()) {
-                        final List<T> l = new ArrayList<T>(parser.getAsyncTask().get());
-                        if (query.matches("[0-9]+"))
-                            DataManipulation.filterByCode(l, Integer.parseInt(query), getCode);
-                        else
-                            DataManipulation.filterByWords(l, query.split(" "), getText, false);
-                        if (l.size() == 0) {
-                            Snackbar.make(mainView, "La ricerca non ha dato nessun risultato.", Snackbar.LENGTH_SHORT).show();
-                        }
-                        else {
-                            Log.d(TAG, "onQueryTextSubmit: " + l.size());
-                            Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
-                            intent.putExtra(listType, (Serializable) l);
-                            intent.putExtra(UniversityActivity.MODE, mode);
-                            startActivity(intent);
-                        }
-                    }
-                } catch (InterruptedException | ExecutionException e) {
-                    Log.e(TAG, String.format("exception caught during parser %s", parser.getName()));
-                    e.printStackTrace();
+    private void alert(String msg) {
+        Snackbar.make(mainView, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    private <T> boolean processQuery(AsyncParser<T, ?> parser, String text, Intent intent, String label,
+                                     Function<T, String> getText, Function<T, Integer> getCode) {
+        try {
+            List<T> l = new ArrayList<>(parser.getAsyncTask().get());   // clona la lista per poterla manipolare in sicurezza
+            if (!text.isEmpty()) {
+                if (text.matches("[0-9]+"))
+                    DataManipulation.filterByCode(l, Integer.parseInt(text), getCode);
+                else
+                    DataManipulation.filterByWords(l, text.split(" "), getText, false);
+                if (l.size() == 0) {
+                    return false;
+                } else {
+                    intent.putExtra(label, (Serializable) l);
+                    return true;
                 }
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            alert(String.format("Errore inatteso: %s. Riprovare.", e.getMessage()));
+            Log.e(TAG, String.format("exception caught during parser %s", parser.getName()));
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private <T> void setSingleListener(final SearchView v, final AsyncParser<T, ?> parser, final String label,
+                                       final Function<T, String> getText, final Function<T, Integer> getCode, final Function<String, Void> setText) {
+        v.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String text) {
+                Intent intent = new Intent(SearchActivity.this, UniversityActivity.class);
+                if (processQuery(parser, text, intent, label, getText, getCode))
+                    startActivity(intent);
+                else
+                    alert("La ricerca non ha prodotto nessun risultato. Provare con altri valori.");
+                v.clearFocus();
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                switch (mode){
-                    case APPALTI: {
-                        appaltiText = newText;
-                        break;
-                    }
-                    case SOLDI_PUBBLICI:{
-                        soldiPubbliciText = newText;
-                        break;
-                    }
-                    default:{
-                        appaltiText = " ";
-                        soldiPubbliciText = " ";
-                    }
-                }
+                setText.eval(newText);
                 return false;
             }
         });
+//        v.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus) hideKeyboard(v);
+//                Log.d(TAG, hasFocus ? "true" : "false");
+//            }
+//        });
     }
 
+    // higher-order functions
+    //
+    //
 
+    private static final Function<AppaltiParser.Data, String> Appalti_getText = new Function<AppaltiParser.Data, String>() {
+        @Override
+        public String eval(AppaltiParser.Data x) {
+            return x.oggetto;
+        }
+    };
 
-//    private void filterSoldiPubbliciByWord(String word, @NonNull List<SoldipubbliciParser.Data> list) {
-//        String[] w = word.split(" ");
-//        DataManipulation.filterByWords(list, w, new Function<SoldipubbliciParser.Data, String>() {
-//            @Override
-//            public String eval(SoldipubbliciParser.Data x) {
-//                return x.descrizione_codice;
-//            }
-//        }, false);
-//    }
-//
-//    private void filterSoldiPubbliciByCode(int code, @NonNull List<SoldipubbliciParser.Data> list) {
-//        filterByCode(list, code, new Function<SoldipubbliciParser.Data, Integer>() {
-//            @Override
-//            public Integer eval(SoldipubbliciParser.Data x) {
-//                return Integer.parseInt(x.codice_siope);
-//            }
-//        });
-//    }
-//
-//    private void filterAppaltiByWord(String word, List<AppaltiParser.Data> list) {
-//        String[] w = word.split(" ");
-//        DataManipulation.filterByWords(list, w, new Function<AppaltiParser.Data, String>() {
-//            @Override
-//            public String eval(AppaltiParser.Data x) {
-//                return x.oggetto;
-//            }
-//        }, false);
-//    }
-//
-//    private void filterAppaltiByCode(int code, List<AppaltiParser.Data> list) {
-//        filterByCode(list, code, new Function<AppaltiParser.Data, Integer>() {
-//            @Override
-//            public Integer eval(AppaltiParser.Data x) {
-//                return Integer.parseInt(x.cig);
-//            }
-//        });
-//    }
+    private static final Function<AppaltiParser.Data, Integer> Appalti_getCode = new Function<AppaltiParser.Data, Integer>() {
+        @Override
+        public Integer eval(AppaltiParser.Data x) {
+            return Integer.parseInt(x.cig);
+        }
+    };
+
+    private static final Function<SoldipubbliciParser.Data, String> Soldipubblici_getText = new Function<SoldipubbliciParser.Data, String>() {
+        @Override
+        public String eval(SoldipubbliciParser.Data x) {
+            return x.descrizione_codice;
+        }
+    };
+
+    private static final Function<SoldipubbliciParser.Data, Integer> Soldipubblici_getCode = new Function<SoldipubbliciParser.Data, Integer>() {
+        @Override
+        public Integer eval(SoldipubbliciParser.Data x) {
+            return Integer.parseInt(x.codice_siope);
+        }
+    };
 
 }
