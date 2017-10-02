@@ -130,13 +130,6 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onFocusChange(View v, boolean hasFocus) {
-//        if (!hasFocus) {
-//            hideKeyboard(v);
-//        }
-//    }
-
     private void alert(String msg) {
         Snackbar.make(mainView, msg, Snackbar.LENGTH_SHORT).show();
     }
@@ -193,8 +186,8 @@ public class SearchActivity extends AppCompatActivity {
 //        v.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
 //            public void onFocusChange(View v, boolean hasFocus) {
-//                if (hasFocus) hideKeyboard(v);
-//                Log.d(TAG, hasFocus ? "true" : "false");
+//                if (!hasFocus)
+//                    hideKeyboard(v);
 //            }
 //        });
     }

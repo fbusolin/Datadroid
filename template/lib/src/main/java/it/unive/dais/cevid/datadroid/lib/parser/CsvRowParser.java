@@ -111,9 +111,11 @@ public class CsvRowParser extends AbstractAsyncCsvParser<CsvRowParser.Row> {
          * una eccezione {@code IllegalArgumentException} nel caso in cui il nome non esista.
          */
         protected int indexOfColumn(String column) {
+            column = trimString(column);
             String[] h = getHeader();
             for (int i = 0; i < h.length; i++) {
-                if (h[i].equalsIgnoreCase(column)) {
+                String s = trimString(h[i]);
+                if (s.equalsIgnoreCase(column)) {
                     return i;
                 }
             }
@@ -166,7 +168,7 @@ public class CsvRowParser extends AbstractAsyncCsvParser<CsvRowParser.Row> {
          */
         @NonNull
         public String get(String column) {
-            return get(indexOfColumn(column));
+            return trimString(get(indexOfColumn(column)));
         }
 
         /**

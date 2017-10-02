@@ -203,7 +203,7 @@ public abstract class AbstractAsyncCsvParser<Data> extends AbstractAsyncParser<D
      * Vengono eliminati i caratteri di spazio e le virgolette.
      * @param s la stringa.
      */
-    protected String trimString(String s) {
+    protected static String trimString(String s) {
         return Prelude.trim(s, new char[]{' ', '"', '\''});
     }
 }

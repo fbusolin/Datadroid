@@ -49,13 +49,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import it.unive.dais.cevid.lib.parser.DataParser;
-import it.unive.dais.cevid.lib.util.MapItem;
+import it.unive.dais.cevid.datadroid.lib.parser.AsyncParser;
+import it.unive.dais.cevid.datadroid.lib.parser.CsvRowParser;
+import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
 /**
  * Questa classe è la componente principale del toolkit: fornisce servizi primari per un'app basata su Google Maps, tra cui localizzazione, pulsanti
@@ -151,8 +155,8 @@ public class MapsActivity extends AppCompatActivity
                     Log.d(TAG, "no current position available");
             }
         });
-
     }
+
 
     // ciclo di vita della app
     //
@@ -402,6 +406,7 @@ public class MapsActivity extends AppCompatActivity
      * Ciò non significa che tutte le operazioni che coinvolgono la mappa vanno eseguite qui: è naturale aver bisogno di accedere al campo
      * gMap in altri metodi, per eseguire operazioni sulla mappa in vari momenti, ma è necessario tenere a mente che tale campo potrebbe
      * essere ancora non inizializzato e va pertanto verificata la nullness.
+     *
      * @param googleMap oggetto di tipo GoogleMap.
      */
     @Override
@@ -435,6 +440,8 @@ public class MapsActivity extends AppCompatActivity
         uis.setMapToolbarEnabled(true);
 
         applyMapSettings();
+
+        demo();
     }
 
     /**
@@ -450,8 +457,9 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * Naviga dalla posizione from alla posizione to chiamando il navigatore di Google.
+     *
      * @param from posizione iniziale.
-     * @param to posizione finale.
+     * @param to   posizione finale.
      */
     protected void navigate(@NonNull LatLng from, @NonNull LatLng to) {
         Intent navigation = new Intent(
@@ -471,6 +479,7 @@ public class MapsActivity extends AppCompatActivity
      * Questo metodo viene invocato al click di QUALUNQUE marker nella mappa; pertanto, se è necessario
      * eseguire comportamenti specifici per un certo marker o gruppo di marker, va modificato questo metodo
      * con codice che si occupa di discernere tra un marker e l'altro in qualche modo.
+     *
      * @param marker il marker che è stato cliccato.
      * @return ritorna true per continuare a chiamare altre callback nella catena di callback per i marker; false altrimenti.
      */
@@ -490,11 +499,20 @@ public class MapsActivity extends AppCompatActivity
         return false;
     }
 
+    /**
+     * Metodo di utilità che permette di posizionare rapidamente sulla mappa una lista di MapItem.
+     * Attenzione: l'oggetto gMap deve essere inizializzato, questo metodo va pertanto chiamato preferibilmente dalla
+     * callback onMapReady().
+     * @param l la lista di oggetti di tipo I tale che I sia sottotipo di MapItem.
+     * @param <I> sottotipo di MapItem.
+     * @return ritorna la collection di oggetti Marker aggiunti alla mappa.
+     */
     @NonNull
     protected <I extends MapItem> Collection<Marker> putMarkersFromMapItems(List<I> l) {
         Collection<Marker> r = new ArrayList<>();
         for (MapItem i : l) {
-            r.add(gMap.addMarker(new MarkerOptions().title(i.getTitle()).position(i.getPosition()).snippet(i.getDescription())));
+            MarkerOptions opts = new MarkerOptions().title(i.getTitle()).position(i.getPosition()).snippet(i.getDescription());
+            r.add(gMap.addMarker(opts));
         }
         return r;
     }
@@ -503,15 +521,15 @@ public class MapsActivity extends AppCompatActivity
      * Metodo proprietario di utilità per popolare la mappa con i dati provenienti da un parser.
      * Si tratta di un metodo che può essere usato direttamente oppure può fungere da esempio per come
      * utilizzare i parser con informazioni geolocalizzate.
+     *
      * @param parser un parser che produca sottotipi di MapItem, con qualunque generic Progress o Input
-     * @param <I> parametro di tipo che estende MapItem.
+     * @param <I>    parametro di tipo che estende MapItem.
      * @return ritorna una collection di marker se tutto va bene; null altrimenti.
      */
     @Nullable
-    protected <I extends MapItem> Collection<Marker> putMarkersFromData(@NonNull DataParser<I, ?> parser) {
+    protected <I extends MapItem> Collection<Marker> putMarkersFromData(@NonNull AsyncParser<I, ?> parser) {
         try {
-            List<I> l = parser.executeAndGet();
-            List<I> l2 = parser.asAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+            List<I> l = parser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
             Log.i(TAG, String.format("parsed %d lines", l.size()));
             return putMarkersFromMapItems(l);
         } catch (InterruptedException | ExecutionException e) {
@@ -563,9 +581,41 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
+    // demo code
 
+    @Nullable
+    private Collection<Marker> markers;
 
+    private void demo() {
+        try {
+            InputStream is = getResources().openRawResource(R.raw.piattaforme);
+            CsvRowParser p = new CsvRowParser(new InputStreamReader(is), true, ";");
+            List<CsvRowParser.Row> rows = p.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+            List<MapItem> l = new ArrayList<>();
+            for (final CsvRowParser.Row r : rows) {
+                l.add(new MapItem() {
+                    @Override
+                    public LatLng getPosition() {
+                        String lat = r.get("Latitudine (WGS84)"), lng = r.get("Longitudine (WGS 84)");
+                        return new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                    }
 
+                    @Override
+                    public String getTitle() {
+                        return r.get("Codice");
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return r.get("Denominazione");
+                    }
+                });
+            }
+            markers = putMarkersFromMapItems(l);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
