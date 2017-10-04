@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.aac.R;
@@ -34,7 +35,7 @@ public class SoldiPubbliciAdapter extends RecyclerView.Adapter<SoldiPubbliciAdap
 
     @Override
     public void onBindViewHolder(SoldiPubbliciItem holder, int position) {
-        holder.importo.setText(dataList.get(position).importo_2016 + "€");
+        holder.importo.setText(String.valueOf(Double.parseDouble(dataList.get(position).importo_2016) / 100) + "€");
         holder.voceSpesa.setText(dataList.get(position).descrizione_codice);
     }
 
