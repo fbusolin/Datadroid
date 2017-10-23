@@ -100,7 +100,7 @@ public abstract class AbstractAsyncCsvParser<Data> extends AbstractAsyncParser<D
             try {
                 if (linen == 0 && !hasActualHeader()) setDefaultHeader(line);
                 r.add(parseLine(line));
-                asyncTask.publish(linen);
+                publishProgress(linen);
             } catch (ParseException e) {
                 Log.w(TAG, String.format("recoverable parse error at line %d: %s", linen, e.getLocalizedMessage()));
             }

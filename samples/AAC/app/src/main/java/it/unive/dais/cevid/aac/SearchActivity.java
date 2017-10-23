@@ -14,7 +14,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -34,10 +37,24 @@ public class SearchActivity extends AppCompatActivity {
 
     private University university;
     private SoldipubbliciParser<?> soldiPubbliciParser; // TODO: agguingere una progress bar al layout
-    private AppaltiParser<?> appaltiParser;
+    private MyAppaltiParser appaltiParser;
     private LinearLayout mainView;
     private String soldiPubbliciText = " ";
     private String appaltiText = " ";
+
+    // TODO: buttare via sta roba
+    protected class MyAppaltiParser extends AppaltiParser<Integer> {
+        private static final String TAG = "MyAppaltiParser";
+
+        public MyAppaltiParser(List<URL> urls) {
+            super(urls);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... n) {
+            Log.d(TAG, String.format("%g", float) urls.size() / (float) n[0]));
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -63,6 +80,7 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +99,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // TODO: salvare lo stato dei parser con un proxy serializzabile
         soldiPubbliciParser = new SoldipubbliciParser(University.getCodiceComparto(), university.getCodiceEnte());
-        appaltiParser = new AppaltiParser(university.getUrls());
+        appaltiParser = new AppaltiParser<>(university.getUrls());
         soldiPubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         appaltiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -135,7 +153,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
@@ -183,13 +201,6 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
-//        v.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                if (!hasFocus)
-//                    hideKeyboard(v);
-//            }
-//        });
     }
 
     // higher-order functions

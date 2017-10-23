@@ -114,9 +114,28 @@ public abstract class AbstractAsyncParser<Data, Progress> implements AsyncParser
         /**
          * Questo metodo è solamente uno stub di {@code publishProgress}.
          * E' necessario perché {@code publishProgress} ha visibilità {@code protected} e quindi non può essere chiamato
-         * dalle sottoclassi di {@code AbstractAsyncParser}.
-         * @param p
+         * dalle sottoclassi della enclosing class {@code AbstractAsyncParser}-.
+         * @param p varargs di tipo Progress
          */
-        void publish(Progress... p) { this.publishProgress(p); }
+        private void _publishProgress(Progress... p) { this.publishProgress(p); }
+        /**
+         * Questo metodo è solamente uno stub di {@code publishProgress}.
+         * E' necessario perché {@code onProgressUpdate} ha visibilità {@code protected} e quindi non può essere chiamato
+         * dalle sottoclassi della enclosing class {@code AbstractAsyncParser}-.
+         * @param p varargs di tipo Progress
+         */
+        private void _onProgressUpdate(Progress... p) { this.onProgressUpdate(p); }
     }
+
+    /**
+     * Questo metodo è lo stub da chiamare dalle sottoclassi.
+     * @param p varargs di tipo Progress
+     */
+    protected final void publishProgress(Progress... p) { asyncTask._publishProgress(p); }
+
+    /**
+     * Questo metodo è overridabile da chi vuole customizzare un parser con una progress bar.
+     * @param p varargs di tipo Progress
+     */
+    protected void onProgressUpdate(Progress... p) { asyncTask._onProgressUpdate(p); }
 }

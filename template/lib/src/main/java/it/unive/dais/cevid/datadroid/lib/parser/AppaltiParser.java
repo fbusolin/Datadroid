@@ -1,6 +1,7 @@
 package it.unive.dais.cevid.datadroid.lib.parser;
 
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,14 +21,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 
-public class AppaltiParser<Progress> extends AbstractAsyncParser<AppaltiParser.Data, Progress> {
+public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, Pair<Integer, Integer>> {
     private static final String TAG = "AppaltiParser";
-    private static final String DATI_ASSENTI_O_MAL_FORMATTATI = "Dati assenti o mal formattati";
+    protected static final String DATI_ASSENTI_O_MAL_FORMATTATI = "Dati assenti o mal formattati";
 
-    private List<URL> urls;
+    protected List<URL> urls;
 
-    public AppaltiParser(List<URL> url) {
-        this.urls = url;
+    public AppaltiParser(List<URL> urls) {
+        this.urls = urls;
     }
 
     @NonNull
@@ -93,7 +94,7 @@ public class AppaltiParser<Progress> extends AbstractAsyncParser<AppaltiParser.D
             e = getElementByTag(parent, "tempiCompletamento");
             if (e != null) {
                 d.dataInizio = getTextByTag(e, "dataInizio", "0");
-                d.dataFine= getTextByTag(e, "dataUltimazione", "0");
+                d.dataFine = getTextByTag(e, "dataUltimazione", "0");
             } else {
                 d.dataInizio = "0";
                 d.dataFine = "0";
@@ -109,7 +110,7 @@ public class AppaltiParser<Progress> extends AbstractAsyncParser<AppaltiParser.D
             d.importo = getTextByTag(parent, "importoAggiudicazione", "0");
 
             //controllo importo somme liquidate
-            d.importoSommeLiquidate = getTextByTag(parent,"importoSommeLiquidate","0");
+            d.importoSommeLiquidate = getTextByTag(parent, "importoSommeLiquidate", "0");
 
             //controllo cig
             d.cig = getTextByTag(parent, "cig", "0");

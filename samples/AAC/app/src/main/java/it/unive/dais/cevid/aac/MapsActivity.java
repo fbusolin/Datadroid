@@ -60,7 +60,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
+import it.unive.dais.cevid.datadroid.lib.parser.AsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
+import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
+import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
+import it.unive.dais.cevid.datadroid.lib.util.Function;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 
 
@@ -112,13 +116,8 @@ public class MapsActivity extends AppCompatActivity
     @Nullable
     protected Marker hereMarker = null;
 
-
-
     private List<University> uni;
     private Map<String, University> universityMap = new HashMap<>();
-
-
-
 
     /**
      * Questo metodo viene invocato quando viene inizializzata questa activity.
@@ -172,9 +171,9 @@ public class MapsActivity extends AppCompatActivity
         try {
             List<URL> urls = new ArrayList<>();
             urls.add(new URL("http://www.unive.it/avcp/datiAppalti2016.xml"));
-            uni.add(new University("Ca'Foscari", 45.4824602, 12.1906404, "Università degli studi di Venezia", urls , "000704968000000"));
+            uni.add(new University("Ca'Foscari", 45.4824602, 12.1906404, "Università degli studi di Venezia", urls, "000704968000000"));
         } catch (MalformedURLException e) {
-            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
+            Log.w(TAG, "malformed url");
             e.printStackTrace();
         }
 
@@ -188,7 +187,7 @@ public class MapsActivity extends AppCompatActivity
             urls.add(new URL("http://www.unipd.it/sites/unipd.it/files/dataset_2016_s2_02.xml"));
             uni.add(new University("Università di Padova", 45.406766, 11.8774462, "Università degli studi di Padova", urls, "000058546000000"));
         } catch (MalformedURLException e) {
-            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
+            Log.w(TAG, "malformed url");
             e.printStackTrace();
         }
 
@@ -199,7 +198,7 @@ public class MapsActivity extends AppCompatActivity
             urls.add(new URL("http://approvvigionamenti.unitn.it/bandi-di-gara-e-contratti/2017/amministrazione_2016.xml"));
             uni.add(new University("Università di Trento", 46.0694828, 11.1188738, "Università degli studi di Trento", urls, "000067046000000"));
         } catch (MalformedURLException e) {
-            Log.w(TAG, "malformed url");   // TODO: scrivere un messaggio decente
+            Log.w(TAG, "malformed url");
             e.printStackTrace();
         }
 
@@ -453,6 +452,7 @@ public class MapsActivity extends AppCompatActivity
      * Ciò non significa che tutte le operazioni che coinvolgono la mappa vanno eseguite qui: è naturale aver bisogno di accedere al campo
      * gMap in altri metodi, per eseguire operazioni sulla mappa in vari momenti, ma è necessario tenere a mente che tale campo potrebbe
      * essere ancora non inizializzato e va pertanto verificata la nullness.
+     *
      * @param googleMap oggetto di tipo GoogleMap.
      */
     @Override
@@ -487,7 +487,7 @@ public class MapsActivity extends AppCompatActivity
 
         applyMapSettings();
 
-        for (University u:uni) {
+        for (University u : uni) {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(u.getPosition());
             markerOptions.title(u.getTitle());
@@ -520,8 +520,9 @@ public class MapsActivity extends AppCompatActivity
 
     /**
      * Naviga dalla posizione from alla posizione to chiamando il navigatore di Google.
+     *
      * @param from posizione iniziale.
-     * @param to posizione finale.
+     * @param to   posizione finale.
      */
     protected void navigate(@NonNull LatLng from, @NonNull LatLng to) {
         Intent navigation = new Intent(
@@ -541,6 +542,7 @@ public class MapsActivity extends AppCompatActivity
      * Questo metodo viene invocato al click di QUALUNQUE marker nella mappa; pertanto, se è necessario
      * eseguire comportamenti specifici per un certo marker o gruppo di marker, va modificato questo metodo
      * con codice che si occupa di discernere tra un marker e l'altro in qualche modo.
+     *
      * @param marker il marker che è stato cliccato.
      * @return ritorna true per continuare a chiamare altre callback nella catena di callback per i marker; false altrimenti.
      */
@@ -573,8 +575,9 @@ public class MapsActivity extends AppCompatActivity
      * Metodo proprietario di utilità per popolare la mappa con i dati provenienti da un parser.
      * Si tratta di un metodo che può essere usato direttamente oppure può fungere da esempio per come
      * utilizzare i parser con informazioni geolocalizzate.
+     *
      * @param parser un parser che produca sottotipi di MapItem, con qualunque generic Progress o Input
-     * @param <I> parametro di tipo che estende MapItem.
+     * @param <I>    parametro di tipo che estende MapItem.
      * @return ritorna una collection di marker se tutto va bene; null altrimenti.
      */
     @Nullable
@@ -624,11 +627,5 @@ public class MapsActivity extends AppCompatActivity
             }
         });
     }
-
-
-
-
-
-
 
 }
