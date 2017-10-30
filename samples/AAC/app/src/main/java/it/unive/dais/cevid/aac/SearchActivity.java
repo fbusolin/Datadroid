@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import it.unive.dais.cevid.datadroid.lib.parser.AsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
+import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
@@ -36,14 +38,17 @@ public class SearchActivity extends AppCompatActivity {
     private static final String BUNDLE_LIST = "LIST";
 
     private University university;
-    private SoldipubbliciParser<?> soldiPubbliciParser; // TODO: agguingere una progress bar al layout
+    private SoldipubbliciParser soldiPubbliciParser; // TODO: agguingere una progress bar al layout
     private MyAppaltiParser appaltiParser;
     private LinearLayout mainView;
     private String soldiPubbliciText = " ";
     private String appaltiText = " ";
 
-    // TODO: buttare via sta roba
-    protected class MyAppaltiParser extends AppaltiParser<Integer> {
+
+
+
+    // simple progress management
+    protected class MyAppaltiParser extends AppaltiParser {
         private static final String TAG = "MyAppaltiParser";
 
         public MyAppaltiParser(List<URL> urls) {
@@ -51,10 +56,15 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... n) {
-            Log.d(TAG, String.format("%g", float) urls.size() / (float) n[0]));
+        public void onProgressUpdate(ProgressStepper p) {
+            Log.d(TAG, String.format("test progress: %d%%", (int) (p.getPercent() * 100.)));
         }
     }
+
+
+
+
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -99,7 +109,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // TODO: salvare lo stato dei parser con un proxy serializzabile
         soldiPubbliciParser = new SoldipubbliciParser(University.getCodiceComparto(), university.getCodiceEnte());
-        appaltiParser = new AppaltiParser<>(university.getUrls());
+        appaltiParser = new MyAppaltiParser(university.getUrls());
         soldiPubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         appaltiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 

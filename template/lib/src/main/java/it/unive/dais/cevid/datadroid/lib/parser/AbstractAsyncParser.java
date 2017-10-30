@@ -23,6 +23,7 @@ import java.util.List;
  *                  Per ignorarlo passare il tipo Void come parametro Progress a questa classe.
  * @author Alvise Spanò, Università Ca' Foscari
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractAsyncParser<Data, Progress> implements AsyncParser<Data, Progress> {
 
     private static final String TAG = "AbstractAsyncParser";
@@ -92,6 +93,7 @@ public abstract class AbstractAsyncParser<Data, Progress> implements AsyncParser
          * Metodo interno che invoca {@code parse} all'interno di un blocco try..catch.
          * Non è necessario fare override a meno che non si desideri specificare un comportamento diverso.
          * Il metodo da definire nelle sottoclassi è {@code parse}.
+         *
          * @param params nessun parametro.
          * @return la lista di dati prodotti da {@code parse}.
          */
@@ -111,31 +113,37 @@ public abstract class AbstractAsyncParser<Data, Progress> implements AsyncParser
             }
         }
 
+        @Override
+        protected void onPreExecute() {
+            AbstractAsyncParser.this.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Progress... p) {
+            AbstractAsyncParser.this.onProgressUpdate(p[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<Data> r) {
+            AbstractAsyncParser.this.onPostExecute(r);
+        }
+
         /**
          * Questo metodo è solamente uno stub di {@code publishProgress}.
          * E' necessario perché {@code publishProgress} ha visibilità {@code protected} e quindi non può essere chiamato
          * dalle sottoclassi della enclosing class {@code AbstractAsyncParser}-.
          * @param p varargs di tipo Progress
          */
-        private void _publishProgress(Progress... p) { this.publishProgress(p); }
-        /**
-         * Questo metodo è solamente uno stub di {@code publishProgress}.
-         * E' necessario perché {@code onProgressUpdate} ha visibilità {@code protected} e quindi non può essere chiamato
-         * dalle sottoclassi della enclosing class {@code AbstractAsyncParser}-.
-         * @param p varargs di tipo Progress
-         */
-        private void _onProgressUpdate(Progress... p) { this.onProgressUpdate(p); }
+        void _publishProgress(Progress... p) { this.publishProgress(p); }
+
     }
 
-    /**
-     * Questo metodo è lo stub da chiamare dalle sottoclassi.
-     * @param p varargs di tipo Progress
-     */
-    protected final void publishProgress(Progress... p) { asyncTask._publishProgress(p); }
+    protected void onPreExecute() {}
+    protected void onProgressUpdate(Progress p) {}
+    protected void onPostExecute(List<Data> r) {}
 
-    /**
-     * Questo metodo è overridabile da chi vuole customizzare un parser con una progress bar.
-     * @param p varargs di tipo Progress
-     */
-    protected void onProgressUpdate(Progress... p) { asyncTask._onProgressUpdate(p); }
+    protected void publishProgress(Progress p) {
+        asyncTask._publishProgress(p);
+    }
+
 }

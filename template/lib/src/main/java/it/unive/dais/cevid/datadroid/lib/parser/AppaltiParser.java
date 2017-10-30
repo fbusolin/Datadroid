@@ -1,7 +1,6 @@
 package it.unive.dais.cevid.datadroid.lib.parser;
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,36 +19,53 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
-public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, Pair<Integer, Integer>> {
+
+public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, ProgressStepper> {
     private static final String TAG = "AppaltiParser";
     protected static final String DATI_ASSENTI_O_MAL_FORMATTATI = "Dati assenti o mal formattati";
-
     protected List<URL> urls;
 
     public AppaltiParser(List<URL> urls) {
         this.urls = urls;
     }
 
+
+
+//    public class MultiProgress {
+//        public int urlCount = 0, nodeCount = 0;
+//
+//        public double getURLPercent() {
+//            return (double) urls.size() / (double) urlCount;
+//        }
+//
+//        public double getNodePercent() {
+//            return (double) urls.size() / (double) urlCount;
+//        }
+//    }
+
     @NonNull
     @Override
     public List<Data> parse() throws IOException {
-        NodeList nodes;
         List<Data> datalist = new ArrayList<>();
+        ProgressStepper prog = new ProgressStepper(urls.size());
         for (URL url : urls) {
             try {
                 URLConnection conn = url.openConnection();
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 Document doc = builder.parse(conn.getInputStream());
-                nodes = doc.getElementsByTagName("lotto");
-                datalist.addAll(parseNodes(nodes));
+                NodeList nodes = doc.getElementsByTagName("lotto");
+                datalist.addAll(parseNodes(prog, nodes));
             } catch (ParserConfigurationException | SAXException e) {
                 throw new IOException(e);
             }
+            prog.step();
         }
         return datalist;
     }
+
 
     protected String getTextByTag(Element e, String tagName, String defaultString) {
         Node n = getElementByTag(e, tagName);
@@ -64,8 +80,9 @@ public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, Pair<
         return (Element) e.getElementsByTagName(tagName).item(0);
     }
 
-    protected List<Data> parseNodes(NodeList nodes) {
+    protected List<Data> parseNodes(ProgressStepper prog, NodeList nodes) {
         List<Data> r = new ArrayList<>();
+        prog = prog.getSubProgressStepper(nodes.getLength());
         for (int i = 0; i < nodes.getLength(); i++) {
             Element parent = (Element) nodes.item(i);
             Data d = new Data();
@@ -102,24 +119,21 @@ public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, Pair<
 
             //controllo oggetto
             d.oggetto = getTextByTag(parent, "oggetto");
-
             //controllo scelta contraente
             d.sceltac = getTextByTag(parent, "sceltaContraente");
-
             //controllo importo
             d.importo = getTextByTag(parent, "importoAggiudicazione", "0");
-
             //controllo importo somme liquidate
             d.importoSommeLiquidate = getTextByTag(parent, "importoSommeLiquidate", "0");
-
             //controllo cig
             d.cig = getTextByTag(parent, "cig", "0");
 
             r.add(d);
+            prog.step();
+            publishProgress(prog);
         }
         return r;
     }
-
 
     public static class Data implements Serializable{
         public String cig;

@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,7 +36,7 @@ import okhttp3.RequestBody;
  * @author Alvise Spanò, Università Ca' Foscari
  * @param <Progress>
  */
-public class SoldipubbliciParser<Progress> extends AbstractAsyncParser<SoldipubbliciParser.Data, Progress> {
+public class SoldipubbliciParser extends AbstractAsyncParser<SoldipubbliciParser.Data, ProgressStepper> {
 
     private static final String TAG = "SoldipubbliciParser";
 
@@ -74,6 +75,7 @@ public class SoldipubbliciParser<Progress> extends AbstractAsyncParser<Soldipubb
         List<Data> r = new ArrayList<>();
         JSONObject jo = new JSONObject(data);
         JSONArray ja = jo.getJSONArray("data");
+        ProgressStepper prog = new ProgressStepper(ja.length());
         for (int i =0; i< ja.length(); i++){
             JSONObject j = ja.getJSONObject(i);
             Data d = new Data();
@@ -96,7 +98,10 @@ public class SoldipubbliciParser<Progress> extends AbstractAsyncParser<Soldipubb
             d.importo_2017 = j.getString("importo_2017");
             d.ricerca = j.getString("ricerca");
             d.periodo = j.getString("periodo");
+
             r.add(d);
+            prog.step();
+            publishProgress(prog);
         }
         return r;
 

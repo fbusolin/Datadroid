@@ -11,7 +11,6 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -57,15 +56,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.util.University;
-import it.unive.dais.cevid.datadroid.lib.parser.AsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
-import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
-import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
-import it.unive.dais.cevid.datadroid.lib.util.Function;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
+import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
 
 /**
@@ -130,6 +125,8 @@ public class MapsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        testProgressStepper();
 
         // inizializza le preferenze
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -626,6 +623,23 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    // TODO: can be removed
+    private void testProgressStepper() {
+        final int n1 = 10, n2 = 30, n3 = 5;
+        ProgressStepper p1 = new ProgressStepper(n1);
+        for (int i = 0; i < n1; ++i) {
+
+            ProgressStepper p2 = p1.getSubProgressStepper(n2);
+            for (int j = 0; j < n2; ++j) {
+                p2.step();
+                Log.d(TAG, String.format("test progress: %d%%", (int) (p2.getPercent() * 100.)));
+            }
+
+            p1.step();
+            Log.d(TAG, String.format("test progress: %d%%", (int) (p1.getPercent() * 100.)));
+        }
     }
 
 }
