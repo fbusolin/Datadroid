@@ -32,19 +32,6 @@ public class AppaltiParser extends AbstractAsyncParser<AppaltiParser.Data, Progr
     }
 
 
-
-//    public class MultiProgress {
-//        public int urlCount = 0, nodeCount = 0;
-//
-//        public double getURLPercent() {
-//            return (double) urls.size() / (double) urlCount;
-//        }
-//
-//        public double getNodePercent() {
-//            return (double) urls.size() / (double) urlCount;
-//        }
-//    }
-
     @NonNull
     @Override
     public List<Data> parse() throws IOException {
