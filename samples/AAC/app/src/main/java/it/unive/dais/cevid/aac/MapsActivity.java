@@ -497,12 +497,16 @@ public class MapsActivity extends AppCompatActivity
         gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                if(marker.getPosition().equals(hereMarker.getPosition())) return; // quick fix al crash
-                Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
-                intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
-                startActivity(intent);
+                if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
+                    Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
+                    intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
+                    startActivity(intent);
+                }
             }
         });
+        LatLng rome = new LatLng(41.89,12.51);
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
+
     }
 
     /**

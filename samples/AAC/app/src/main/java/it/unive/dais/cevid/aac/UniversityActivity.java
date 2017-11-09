@@ -2,6 +2,7 @@ package it.unive.dais.cevid.aac;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,8 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import it.unive.dais.cevid.aac.util.AppaltiAdapter;
 import it.unive.dais.cevid.aac.util.SoldiPubbliciAdapter;
@@ -20,7 +21,6 @@ import it.unive.dais.cevid.datadroid.lib.parser.AppaltiParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
-import it.unive.dais.cevid.datadroid.lib.util.UnexpectedException;
 
 
 public class UniversityActivity extends AppCompatActivity {
@@ -51,6 +51,12 @@ public class UniversityActivity extends AppCompatActivity {
         Intent i = getIntent();
 //        Mode mode = (Mode) i.getSerializableExtra(MODE);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        /*Test */
+        actionBar.setIcon(R.drawable.ic_ok_ac);
+        /*/Test*/
 
         switch (Mode.ofIntent(i)) {
             case APPALTI: {
@@ -115,6 +121,12 @@ public class UniversityActivity extends AppCompatActivity {
                     }
                 });
                 tv.setText(String.valueOf(sum));
+                if(checkAC(l2,l3)){
+                    actionBar.setIcon(R.drawable.ic_ok_ac);
+                }
+                else{
+                    actionBar.setIcon(R.drawable.ic_warning_ac);
+                }
                 break;
             }
             
@@ -124,6 +136,11 @@ public class UniversityActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    public boolean checkAC(List<SoldipubbliciParser.Data> listaSpesa, List<AppaltiParser.Data> appalti){
+        //TEST
+        return listaSpesa.size() > appalti.size();
     }
 
 
