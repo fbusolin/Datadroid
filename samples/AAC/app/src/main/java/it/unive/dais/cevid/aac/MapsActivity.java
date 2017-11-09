@@ -497,6 +497,7 @@ public class MapsActivity extends AppCompatActivity
         gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
+                if(marker.getPosition().equals(hereMarker.getPosition())) return; // quick fix al crash
                 Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
                 intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
                 startActivity(intent);
