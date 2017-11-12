@@ -27,7 +27,7 @@ import it.unive.dais.cevid.datadroid.lib.parser.EntiParser;
 import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
 
-public class SearchActivity extends ListActivity {
+public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
 
@@ -40,16 +40,26 @@ public class SearchActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        mainView = (LinearLayout) findViewById(R.id.activity_search);
+        /*mainView = (LinearLayout) findViewById(R.id.activity_search);
 
         SearchView soldiPubblicireloadedSearch = (SearchView) findViewById(R.id.ricerca_soldipubblicireloaded);
-        soldiPubblicireloadedSearch.onActionViewExpanded();
+        soldiPubblicireloadedSearch.onActionViewExpanded();*/
 
-        entiParser = new EntiParser("PRO");
+        entiParser = new EntiParser();
         entiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+        try {
+            List<EntiParser.Data> l = new ArrayList<>(entiParser.getAsyncTask().get());
+            for (EntiParser.Data x : l) {
+                Log.d("PROVA", x.codice_comparto);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        setSingleListener(soldiPubblicireloadedSearch, entiParser, SearchableActivity.LIST_COMUNI, Enti_getText, Enti_getCode, new Function<String, Void>() {
+        /*setSingleListener(soldiPubblicireloadedSearch, entiParser, SearchableActivity.LIST_COMUNI, Enti_getText, Enti_getCode, new Function<String, Void>() {
             @Override
             public Void eval(String x) {
                 SearchActivity.this.searchText = x;
@@ -57,8 +67,8 @@ public class SearchActivity extends ListActivity {
             }
         });
 
-        Button combineButton = (Button) findViewById(R.id.button_data);
-        combineButton.setOnClickListener(new View.OnClickListener() {
+        //Button combineButton = (Button) findViewById(R.id.button_data);
+        /*combineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SearchActivity.this, com.example.gianmarcocallegher.sprapp.SearchableActivity.class);
@@ -77,10 +87,10 @@ public class SearchActivity extends ListActivity {
                     hideKeyboard(v);
                 }
             }
-        });
+        });*/
     }
 
-    private <T> void setSingleListener(final SearchView v, final AsyncParser<T, ?> parser, final String label,
+    /*private <T> void setSingleListener(final SearchView v, final AsyncParser<T, ?> parser, final String label,
                                        final Function<T, String> getText, final Function<T, Integer> getCode, final Function<String, Void> setText) {
         v.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -146,6 +156,6 @@ public class SearchActivity extends ListActivity {
         public Integer eval(EntiParser.Data x) {
             return Integer.parseInt(x.codice_comune);
         }
-    };
+    };*/
 
 }

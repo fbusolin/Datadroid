@@ -34,7 +34,7 @@ import okhttp3.RequestBody;
  * </pre></blockquote>
  *
  * @author Alvise Spanò, Università Ca' Foscari
- * @param <Progress>
+ * @param //<Progress>
  */
 public class SoldipubbliciParser extends AbstractAsyncParser<SoldipubbliciParser.Data, ProgressStepper> {
 
