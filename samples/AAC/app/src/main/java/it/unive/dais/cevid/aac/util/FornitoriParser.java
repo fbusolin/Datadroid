@@ -64,15 +64,15 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             d.n_abilitazioni = obj.optString("Numero_Abilitazioni");
             d.n_aggiudicati = obj.optString("Numero_Aggiudicazioni");
             d.tipo_soc = obj.optString("Forma_Societaria");
-            d.indirizzo = obj.optString("Indirizzo_Sede_Legale");
+            d.indirizzo = obj.optString("Indirizzo_Sede_legale");
             d.piva = obj.optString("#Partita_Iva");
-            d.prov_sede = obj.optString("Provincia_Sede_Legale");
+            d.prov_sede = obj.optString("Provincia_Sede_legale");
             d.n_transazioni = obj.optString("Numero_Transazioni");
             d.rag_sociale = obj.optString("Ragione_Sociale");
-            d.reg_sede = obj.optString("Regione_Sede_Legale");
+            d.reg_sede = obj.optString("Regione_Sede_legale");
             d.n_attivi = obj.optString("Numero_Contratti_Attivi");
-            d.comune_sede = obj.optString("Comune_Sede_Legale");
-            d.nazione_sede = obj.optString("Nazione_Sede_Legale");
+            d.comune_sede = obj.optString("Comune_Sede_legale");
+            d.nazione_sede = obj.optString("Nazione_Sede_legale");
             d.setPosition();
             r.add(d);
         }
@@ -102,8 +102,8 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         }
 
         public LatLng getLatLngFromAddress(String address){
-            Request request = new Request.Builder().url("http://maps.google.com/maps/api/geocode/json?address=" +
-                    address + "&sensor=false"+"&key="+ R.string.google_API_KEY).build();
+            Request request = new Request.Builder().url("https://maps.google.com/maps/api/geocode/json?address=" +
+                    address +"&key="+ "AIzaSyCASujoPAGw8-K055Djw3hEJUV07F7bCWY").build();
             try{
                 return(parseAddress(new OkHttpClient().newCall(request).execute().body().string()));
             } catch(IOException ex){
@@ -112,7 +112,19 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             return new LatLng(0,0);
         }
         public LatLng parseAddress(String data){
-            return null;
+            try {
+                JSONObject obj = new JSONObject(data);
+                JSONArray res = obj.getJSONArray("results");
+                JSONObject payload = res.getJSONObject(0);
+                JSONObject geo = payload.getJSONObject("geometry");
+                JSONObject location = geo.getJSONObject("location");
+                double lat = location.getDouble("lat");
+                double lng = location.getDouble("lng");
+                return new LatLng(lat,lng);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return new LatLng(0,0);
         }
 
         @Override
