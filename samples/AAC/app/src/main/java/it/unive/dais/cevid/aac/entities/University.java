@@ -1,4 +1,4 @@
-package it.unive.dais.cevid.aac.util;
+package it.unive.dais.cevid.aac.entities;
 
 import com.google.android.gms.maps.model.LatLng;
 

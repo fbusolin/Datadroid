@@ -41,4 +41,5 @@ dependencies {
     // jsoup HTML parser library @ https://jsoup.org/
     compile 'org.jsoup:jsoup:1.11.1'
     testCompile 'junit:junit:4.12'
+
 }
