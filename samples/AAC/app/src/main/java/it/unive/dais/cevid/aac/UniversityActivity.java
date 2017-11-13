@@ -52,12 +52,6 @@ public class UniversityActivity extends AppCompatActivity {
 //        Mode mode = (Mode) i.getSerializableExtra(MODE);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        /*Test */
-        actionBar.setIcon(R.drawable.ic_ok_ac);
-        /*/Test*/
-
         switch (Mode.ofIntent(i)) {
             case APPALTI: {
                 RecyclerView v = (RecyclerView) findViewById(R.id.lista_appalti);
@@ -121,12 +115,6 @@ public class UniversityActivity extends AppCompatActivity {
                     }
                 });
                 tv.setText(String.valueOf(sum));
-                if(checkAC(l2,l3)){
-                    actionBar.setIcon(R.drawable.ic_ok_ac);
-                }
-                else{
-                    actionBar.setIcon(R.drawable.ic_warning_ac);
-                }
                 break;
             }
             
@@ -136,11 +124,6 @@ public class UniversityActivity extends AppCompatActivity {
 
         }
 
-    }
-
-    public boolean checkAC(List<SoldipubbliciParser.Data> listaSpesa, List<AppaltiParser.Data> appalti){
-        //TEST
-        return listaSpesa.size() > appalti.size();
     }
 
 

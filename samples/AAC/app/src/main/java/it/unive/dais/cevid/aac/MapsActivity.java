@@ -11,6 +11,7 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -43,21 +44,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import it.unive.dais.cevid.aac.util.University;
+import it.unive.dais.cevid.aac.entities.Comune;
+import it.unive.dais.cevid.aac.entities.Fornitore;
+import it.unive.dais.cevid.aac.entities.University;
+import it.unive.dais.cevid.aac.util.FornitoriParser;
+import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
@@ -114,6 +119,12 @@ public class MapsActivity extends AppCompatActivity
     private List<University> uni;
     private Map<String, University> universityMap = new HashMap<>();
 
+    private List<Fornitore> fornitori;
+    private List<Comune> comuni;
+    private Map<String,Comune> comuneMap = new HashMap<>();
+    private Map<String, Fornitore> fornitoreMap = new HashMap<>();
+    private FornitoriParser fornitoriParser;
+
     /**
      * Questo metodo viene invocato quando viene inizializzata questa activity.
      * Si tratta di una sorta di "main" dell'intera activity.
@@ -127,6 +138,8 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
 
         testProgressStepper();
+        fornitoriParser = new FornitoriParser();
+        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // inizializza le preferenze
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -163,6 +176,8 @@ public class MapsActivity extends AppCompatActivity
             }
         });
 
+        //------- INIZIALIZZAZIONE COMUNI  E FORNITORI---------------------------
+        /** comment out previuos code
         //add Ca Foscari
         uni = new ArrayList<>();
         try {
@@ -199,6 +214,25 @@ public class MapsActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+
+         **/
+        //add Comuni
+        comuni = new ArrayList<>();
+
+        comuni.add(new Comune("Venezia",45.4046812,12.1008668,"Comune di Venezia","000066862"));
+        comuni.add(new Comune("Milano",45.4628327,9.1075204,"Comune di Milano","800000013"));
+
+        comuni.add(new Comune("Torino",45.0735885,7.6053946,"Comune di Torino","000098618"));
+        comuni.add(new Comune("Bologna",44.4992191,11.2614736,"Comune di Bologna","000250878"));
+
+        comuni.add(new Comune("Genova",44.4471368,8.7504034,"Comune di Genova","000164848"));
+        comuni.add(new Comune("Firenze",43.7800606,11.1707559,"Comune di Firenze","800000038"));
+
+        comuni.add(new Comune("Roma",41.9102411,12.3955688,"Comune di Roma","800000047"));
+        comuni.add(new Comune("Napoli",40.854042,14.1763903,"Comune di Napoli","000708829"));
+
+        comuni.add(new Comune("Palermo",38.1406577,13.2870764,"Comune di Palermo","800000060"));
+        comuni.add(new Comune("Cagliari",39.2254656,9.0932726,"Comune di Cagliari","000021556"));
     }
 
     // ciclo di vita della app
@@ -483,7 +517,7 @@ public class MapsActivity extends AppCompatActivity
         uis.setMapToolbarEnabled(true);
 
         applyMapSettings();
-
+        /** comment out previous code
         for (University u : uni) {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(u.getPosition());
@@ -504,8 +538,32 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         });
+         **/
+        for(Comune c : this.comuni){
+            MarkerOptions markeropt = new MarkerOptions()
+                    .position(c.getPosition())
+                    .title(c.getTitle())
+                    .snippet(c.getDescription())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            Marker marker = gMap.addMarker(markeropt);
+            comuneMap.put(marker.getId(),c);
+            List<FornitoriParser.Data> fornitoriRaw = new ArrayList<>();
+            try {
+                fornitoriRaw = this.fornitoriParser.getAsyncTask().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            for(FornitoriParser.Data f : fornitoriRaw){
+
+            }
+        }
+
+
         LatLng rome = new LatLng(41.89,12.51);
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
+
 
     }
 
