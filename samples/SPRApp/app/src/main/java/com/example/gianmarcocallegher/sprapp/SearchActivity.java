@@ -43,10 +43,10 @@ public class SearchActivity extends AppCompatActivity {
 
         entiList = new ArrayList<EntiParser.Data>();
 
-        /*mainView = (LinearLayout) findViewById(R.id.activity_search);
+        //mainView = (LinearLayout) findViewById(R.id.activity_search);
 
         SearchView soldiPubblicireloadedSearch = (SearchView) findViewById(R.id.ricerca_soldipubblicireloaded);
-        soldiPubblicireloadedSearch.onActionViewExpanded();*/
+        soldiPubblicireloadedSearch.onActionViewExpanded();
 
         entiParser = new EntiParser();
         entiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -54,16 +54,17 @@ public class SearchActivity extends AppCompatActivity {
         try {
             List<EntiParser.Data> l = new ArrayList<>(entiParser.getAsyncTask().get());
             for (EntiParser.Data x : l) {
-                if (x.codice_comparto == "PRO")
+                if (x.codice_comparto.equals("PRO") || x.codice_comparto.equals("REG")) {
+                    Log.d("PROVA", x.descrizione_ente);
                     entiList.add(x);
+                }
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        /*setSingleListener(soldiPubblicireloadedSearch, entiParser, SearchableActivity.LIST_COMUNI, Enti_getText, Enti_getCode, new Function<String, Void>() {
+
+        /*setSingleListener(soldiPubblicireloadedSearch, entiParser, SearchableActivity.LIST_ENTI_TERRITORIALI, Enti_getText, Enti_getCode, new Function<String, Void>() {
             @Override
             public Void eval(String x) {
                 SearchActivity.this.searchText = x;
@@ -146,7 +147,7 @@ public class SearchActivity extends AppCompatActivity {
     private void hideKeyboard(View v) {
         InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
+    }*/
 
     private static final Function<EntiParser.Data, String> Enti_getText = new Function<EntiParser.Data, String>() {
         @Override
@@ -160,6 +161,6 @@ public class SearchActivity extends AppCompatActivity {
         public Integer eval(EntiParser.Data x) {
             return Integer.parseInt(x.codice_comune);
         }
-    };*/
+    };
 
 }

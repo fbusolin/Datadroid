@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 public class SearchableActivity extends ListActivity {
 
-    public static final String LIST_COMUNI = "LIST_COMUNI";
+    public static final String LIST_COMUNI = "LIST_ENTI_TERRITORIALI";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
