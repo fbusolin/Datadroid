@@ -1,7 +1,6 @@
 package it.unive.dais.cevid.datadroid.lib.parser;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +28,7 @@ public class EntiParser<Progress> extends AbstractAsyncParser<EntiParser.Data, P
     @Override
     public List<EntiParser.Data> parse() throws IOException {
 
+
         Request request = new Request.Builder()
                 .url("http://soldipubblici.gov.it/it/chi/search/%20")
                 .addHeader("Accept", "application/json, text/javascript, */*; q=0.01")
@@ -45,8 +45,8 @@ public class EntiParser<Progress> extends AbstractAsyncParser<EntiParser.Data, P
 
     protected List<EntiParser.Data> parseJSON(String data) throws JSONException {
         List<EntiParser.Data> r = new ArrayList<>();
-        JSONObject jo = new JSONObject(data);
-        JSONArray ja = jo.getJSONArray("");
+        //JSONObject jo = new JSONObject(data);
+        JSONArray ja = new JSONArray(data);
         for (int i =0; i< ja.length(); i++){
             JSONObject j = ja.getJSONObject(i);
             EntiParser.Data d = new EntiParser.Data();

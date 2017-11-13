@@ -34,11 +34,14 @@ public class SearchActivity extends AppCompatActivity {
     private LinearLayout mainView;
     private EntiParser<?> entiParser;
     private String searchText = "";
+    private List entiList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        entiList = new ArrayList<EntiParser.Data>();
 
         /*mainView = (LinearLayout) findViewById(R.id.activity_search);
 
@@ -51,7 +54,8 @@ public class SearchActivity extends AppCompatActivity {
         try {
             List<EntiParser.Data> l = new ArrayList<>(entiParser.getAsyncTask().get());
             for (EntiParser.Data x : l) {
-                Log.d("PROVA", x.codice_comparto);
+                if (x.codice_comparto == "PRO")
+                    entiList.add(x);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
