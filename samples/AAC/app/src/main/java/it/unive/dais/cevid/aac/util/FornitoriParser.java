@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Api;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -34,6 +35,10 @@ import okhttp3.RequestBody;
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
     String query = "http://dati.consip.it/api/action/datastore_search?resource_id=f476dccf-d60a-4301-b757-829b3e030ac6";
+    GoogleMap gMap;
+    public FornitoriParser(GoogleMap map){
+        this.gMap = map;
+    }
     @NonNull
     @Override
     public List<Data> parse() throws IOException {
@@ -113,6 +118,11 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         }
         public LatLng parseAddress(String data){
             try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
                 JSONObject obj = new JSONObject(data);
                 JSONArray res = obj.getJSONArray("results");
                 JSONObject payload = res.getJSONObject(0);
@@ -130,6 +140,12 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         @Override
         public LatLng getPosition() {
             return this.position;
+        }
+        public String getDescription(){
+            return String.format("%s\n%s", this.rag_sociale, tipo_soc);
+        }
+        public String getTitle(){
+            return this.rag_sociale;
         }
     }
 }

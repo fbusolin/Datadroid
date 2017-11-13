@@ -62,7 +62,6 @@ import it.unive.dais.cevid.aac.entities.Comune;
 import it.unive.dais.cevid.aac.entities.Fornitore;
 import it.unive.dais.cevid.aac.entities.University;
 import it.unive.dais.cevid.aac.util.FornitoriParser;
-import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
@@ -84,7 +83,7 @@ public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener{
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
@@ -138,7 +137,7 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
 
         testProgressStepper();
-        fornitoriParser = new FornitoriParser();
+        fornitoriParser = new FornitoriParser(this.gMap);
         fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // inizializza le preferenze
@@ -547,25 +546,34 @@ public class MapsActivity extends AppCompatActivity
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             Marker marker = gMap.addMarker(markeropt);
             comuneMap.put(marker.getId(),c);
-            List<FornitoriParser.Data> fornitoriRaw = new ArrayList<>();
-            try {
-                fornitoriRaw = this.fornitoriParser.getAsyncTask().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-            for(FornitoriParser.Data f : fornitoriRaw){
-
-            }
         }
+        List<FornitoriParser.Data> fornitori = new ArrayList<>();
+        try {
+            fornitori = fornitoriParser.getAsyncTask().get();
+            for(FornitoriParser.Data fornitore : fornitori){
+               LatLng position = fornitore.getPosition();
+               Fornitore f = new Fornitore(fornitore.getTitle(),fornitore.getDescription(),fornitore.getPosition().latitude,fornitore.getPosition().longitude);
 
+               MarkerOptions markeropt = new MarkerOptions()
+                        .position(position)
+                        .title(f.getTitle())
+                        .snippet(f.getDescription())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                Marker marker = gMap.addMarker(markeropt);
+                fornitoreMap.put(marker.getId(),f);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         LatLng rome = new LatLng(41.89,12.51);
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
 
 
     }
+
 
     /**
      * Metodo proprietario che forza l'applicazione le impostazioni (o preferenze) che riguardano la mappa.
