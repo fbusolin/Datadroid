@@ -59,7 +59,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.entities.Comune;
 import it.unive.dais.cevid.aac.entities.Fornitore;
@@ -86,7 +85,11 @@ public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener, BottomNavigationView.OnNavigationItemSelectedListener{
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnMarkerClickListener,
+        BottomNavigationView.OnNavigationItemSelectedListener{
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
@@ -185,7 +188,7 @@ public class MapsActivity extends AppCompatActivity
         try {
             List<URL> urls = new ArrayList<>();
             urls.add(new URL("http://www.unive.it/avcp/datiAppalti2016.xml"));
-            uni.add(new University("Ca'Foscari", 45.4824602, 12.1906404, "Università degli studi di Venezia", urls, "000704968000000"));
+            uni.add(new University("Ca'Foscari", 45.437576,12.3289554, "Università degli studi di Venezia", urls, "000704968000000"));
         } catch (MalformedURLException e) {
             Log.w(TAG, "malformed url");
             e.printStackTrace();
@@ -220,7 +223,7 @@ public class MapsActivity extends AppCompatActivity
         //add Comuni
         comuni = new ArrayList<>();
 
-        comuni.add(new Comune("Venezia",45.4046812,12.1008668,"Comune di Venezia","000066862"));
+        comuni.add(new Comune("Venezia",45.4375466,12.3289983,"Comune di Venezia","000066862"));
         comuni.add(new Comune("Milano",45.4628327,9.1075204,"Comune di Milano","800000013"));
 
         comuni.add(new Comune("Torino",45.0735885,7.6053946,"Comune di Torino","000098618"));
