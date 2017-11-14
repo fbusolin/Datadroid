@@ -1,30 +1,24 @@
 package com.example.gianmarcocallegher.sprapp;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
-import com.example.gianmarcocallegher.sprapp.R;
-import com.example.gianmarcocallegher.sprapp.SearchableActivity;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import it.unive.dais.cevid.datadroid.lib.parser.AsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.EntiParser;
-import it.unive.dais.cevid.datadroid.lib.util.DataManipulation;
 import it.unive.dais.cevid.datadroid.lib.util.Function;
 
 public class SearchActivity extends AppCompatActivity {
@@ -35,27 +29,31 @@ public class SearchActivity extends AppCompatActivity {
     private EntiParser<?> entiParser;
     private String searchText = "";
     private List entiList;
+    private ListView lv;
+    ArrayAdapter<String> adapter;
+    EditText inputSearch;
+    List<String> nomeEnti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        lv = (ListView) findViewById(R.id.list_view);
+        inputSearch = (EditText) findViewById(R.id.inputSearch);
+
         entiList = new ArrayList<EntiParser.Data>();
-
-        //mainView = (LinearLayout) findViewById(R.id.activity_search);
-
-        SearchView soldiPubblicireloadedSearch = (SearchView) findViewById(R.id.ricerca_soldipubblicireloaded);
-        soldiPubblicireloadedSearch.onActionViewExpanded();
 
         entiParser = new EntiParser();
         entiParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        nomeEnti = new ArrayList<>();
 
         try {
             List<EntiParser.Data> l = new ArrayList<>(entiParser.getAsyncTask().get());
             for (EntiParser.Data x : l) {
                 if (x.codice_comparto.equals("PRO") || x.codice_comparto.equals("REG")) {
-                    Log.d("PROVA", x.descrizione_ente);
+                    //Log.d("PROVA", x.descrizione_ente);
                     entiList.add(x);
                 }
             }
@@ -63,6 +61,35 @@ public class SearchActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        for (Object x : entiList)
+            nomeEnti.add(((EntiParser.Data) x).descrizione_ente);
+
+        adapter = new ArrayAdapter<String>(this, R.layout.list_enti, R.id.DescrizioneEnte, nomeEnti);
+        lv.setAdapter(adapter);
+
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                SearchActivity.this.adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(SearchActivity.this, SearchableActivity.class);
+            }
+        });
 
         /*setSingleListener(soldiPubblicireloadedSearch, entiParser, SearchableActivity.LIST_ENTI_TERRITORIALI, Enti_getText, Enti_getCode, new Function<String, Void>() {
             @Override
