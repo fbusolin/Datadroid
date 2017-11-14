@@ -20,14 +20,14 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
  * Sottoclasse di {@code AbstractAsyncParser} che implementa un downloader e parser per il sito http://soldipubblici.thefool.it/
  * Questa classe &egrave; usabile direttamente e non necessita di essere ereditata.
  * Non richiede il generic FiltrableData perch&eacute; utilizza una classe innestata apposita per rappresentare i dati.
- * La classe {@link ScraperReloaded.Data} ha a sua volta due sottoclassi {@link ScraperReloaded.Comune} e
- * {@link ScraperReloaded.Siope} che rappresentano i due possibili dati trovabili nel sito.
+ * La classe {@link ReloadedScraperParser.Data} ha a sua volta due sottoclassi {@link ReloadedScraperParser.Comune} e
+ * {@link ReloadedScraperParser.Siope} che rappresentano i due possibili dati trovabili nel sito.
  * In fase di scraping viene individuato il tipo corretto tra i due in base al contenuto della pagina.
  * Un esempio d'uso
  * <blockquote><pre>
  * {@code
- * {@link ScraperReloaded scraper = new ScraperReloaded("comuni",5);
- * List<{@link ScraperReloaded.Data}> data = scraper.parse();
+ * {@link ReloadedScraperParser scraper = new ReloadedScraperParser("comuni",5);
+ * List<{@link ReloadedScraperParser.Data}> data = scraper.parse();
  * for(Data d : data){
  *     //do something
  * }
@@ -43,12 +43,12 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
  *
  *     */
 
-public class ScraperReloaded extends AbstractAsyncParser<ScraperReloaded.Data, ProgressStepper> {
-    private static final String TAG = "ScraperReloaded";
+public class ReloadedScraperParser extends AbstractAsyncParser<ReloadedScraperParser.Data, ProgressStepper> {
+    private static final String TAG = "ReloadedScraperParser";
     String home = "http://soldipubblici.thefool.it/";
     String url;
     int depth;
-    public ScraperReloaded(String query,int depth){
+    public ReloadedScraperParser(String query, int depth){
         this.url = this.home + query;
         this.depth = depth;
     }
@@ -62,7 +62,7 @@ public class ScraperReloaded extends AbstractAsyncParser<ScraperReloaded.Data, P
             try{
                 document = connection.get();
             }catch(IOException ex){
-                Logger.getLogger(ScraperReloaded.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReloadedScraperParser.class.getName()).log(Level.SEVERE, null, ex);
             }
             if(document == null)return data;
             Elements contentTable = document.select(".table-hover");

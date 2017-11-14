@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +52,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -83,7 +86,7 @@ public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener{
+        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener, BottomNavigationView.OnNavigationItemSelectedListener{
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
@@ -137,8 +140,6 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
 
         testProgressStepper();
-        fornitoriParser = new FornitoriParser(this.gMap);
-        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // inizializza le preferenze
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -174,9 +175,11 @@ public class MapsActivity extends AppCompatActivity
                     Log.d(TAG, "no current position available");
             }
         });
+        this.fornitori = new ArrayList<>();
+        fornitoriParser = new FornitoriParser(this.fornitori);
+        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         //------- INIZIALIZZAZIONE COMUNI  E FORNITORI---------------------------
-        /** comment out previuos code
         //add Ca Foscari
         uni = new ArrayList<>();
         try {
@@ -214,7 +217,6 @@ public class MapsActivity extends AppCompatActivity
         }
 
 
-         **/
         //add Comuni
         comuni = new ArrayList<>();
 
@@ -499,6 +501,8 @@ public class MapsActivity extends AppCompatActivity
         gMap.setOnMapLongClickListener(this);
         gMap.setOnCameraMoveStartedListener(this);
         gMap.setOnMarkerClickListener(this);
+        BottomNavigationView bnv = (BottomNavigationView) findViewById(R.id.navigation);
+        bnv.setOnNavigationItemSelectedListener(this);
 
         UiSettings uis = gMap.getUiSettings();
         uis.setZoomGesturesEnabled(true);
@@ -511,33 +515,63 @@ public class MapsActivity extends AppCompatActivity
                         return false;
                     }
                 });
+        gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                if(universityMap.containsKey(marker.getId())){
+                    if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
+                        Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
+                        intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
+                        startActivity(intent);
+                    }
+                }
+                else if(comuneMap.containsKey(marker.getId())){
+                    //activity comuni
+                }
+                else if(fornitoreMap.containsKey(marker.getId())){
+                    //activity fornitori
+                }
+            }
+        });
         uis.setCompassEnabled(true);
         uis.setZoomControlsEnabled(true);
         uis.setMapToolbarEnabled(true);
 
         applyMapSettings();
-        /** comment out previous code
-        for (University u : uni) {
-            MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(u.getPosition());
-            markerOptions.title(u.getTitle());
-            markerOptions.snippet(u.getDescription());
-            Marker marker = gMap.addMarker(markerOptions);
-            universityMap.put(marker.getId(), u);
+        populateMap(bnv.getMenu().findItem(bnv.getSelectedItemId()));
+        LatLng rome = new LatLng(41.89,12.51);
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
+    }
+    protected void populateMap(MenuItem item){
+        gMap.clear();
+        this.fornitoreMap.clear();
+        this.universityMap.clear();
+        this.fornitoreMap.clear();
+        String title = String.valueOf(item.getTitle());
+        if(title.equals(getString(R.string.bottom_menu_university))){
+            generateUniveristy();
+        }
+        else if(title.equals(getString(R.string.bottom_menu_public))){
+            generateComuni();
+        }
+        else if(title.equals(getString(R.string.bottom_menu_winners))){
+            generateFornitori();
+        }
+    }
+
+    private void generateFornitori() {
+        for(Fornitore f : this.fornitori){
+            MarkerOptions markeropt = new MarkerOptions()
+                    .position(f.getPosition())
+                    .title(f.getTitle())
+                    .snippet(f.getDescription())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            Marker marker = gMap.addMarker(markeropt);
+            fornitoreMap.put(marker.getId(),f);
 
         }
-
-        gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
-                    Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
-                    intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
-                    startActivity(intent);
-                }
-            }
-        });
-         **/
+    }
+    private void generateComuni() {
         for(Comune c : this.comuni){
             MarkerOptions markeropt = new MarkerOptions()
                     .position(c.getPosition())
@@ -547,31 +581,23 @@ public class MapsActivity extends AppCompatActivity
             Marker marker = gMap.addMarker(markeropt);
             comuneMap.put(marker.getId(),c);
         }
-        List<FornitoriParser.Data> fornitori = new ArrayList<>();
-        try {
-            fornitori = fornitoriParser.getAsyncTask().get();
-            for(FornitoriParser.Data fornitore : fornitori){
-               LatLng position = fornitore.getPosition();
-               Fornitore f = new Fornitore(fornitore.getTitle(),fornitore.getDescription(),fornitore.getPosition().latitude,fornitore.getPosition().longitude);
+    }
+    private void generateUniveristy() {
+        for (University u : uni) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(u.getPosition());
+            markerOptions.title(u.getTitle());
+            markerOptions.snippet(u.getDescription());
+            Marker marker = gMap.addMarker(markerOptions);
+            universityMap.put(marker.getId(), u);
 
-               MarkerOptions markeropt = new MarkerOptions()
-                        .position(position)
-                        .title(f.getTitle())
-                        .snippet(f.getDescription())
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-                Marker marker = gMap.addMarker(markeropt);
-                fornitoreMap.put(marker.getId(),f);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
         }
+    }
 
-        LatLng rome = new LatLng(41.89,12.51);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
-
-
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        populateMap(item);
+        return true;
     }
 
 

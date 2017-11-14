@@ -6,7 +6,10 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,8 +21,11 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.R;
+import it.unive.dais.cevid.aac.entities.Fornitore;
 import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
@@ -35,9 +41,9 @@ import okhttp3.RequestBody;
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
     String query = "http://dati.consip.it/api/action/datastore_search?resource_id=f476dccf-d60a-4301-b757-829b3e030ac6";
-    GoogleMap gMap;
-    public FornitoriParser(GoogleMap map){
-        this.gMap = map;
+    List<Fornitore> items;
+    public FornitoriParser(List<Fornitore> list){
+        this.items = list;
     }
     @NonNull
     @Override
@@ -146,6 +152,17 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         }
         public String getTitle(){
             return this.rag_sociale;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(List<Data> r) {
+        List<FornitoriParser.Data> fornitori = r;
+        for(FornitoriParser.Data fornitore : fornitori){
+            LatLng position = fornitore.getPosition();
+            Fornitore f = new Fornitore(fornitore.getTitle(),fornitore.getDescription(),fornitore.getPosition().latitude,fornitore.getPosition().longitude);
+            this.items.add(f);
+
         }
     }
 }
