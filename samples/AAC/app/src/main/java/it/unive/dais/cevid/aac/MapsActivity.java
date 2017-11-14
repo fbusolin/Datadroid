@@ -176,7 +176,7 @@ public class MapsActivity extends AppCompatActivity
             }
         });
         this.fornitori = new ArrayList<>();
-        fornitoriParser = new FornitoriParser(this.fornitori);
+        fornitoriParser = new FornitoriParser(this,this.fornitori);
         fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         //------- INIZIALIZZAZIONE COMUNI  E FORNITORI---------------------------
@@ -543,6 +543,7 @@ public class MapsActivity extends AppCompatActivity
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
     }
     protected void populateMap(MenuItem item){
+        if(gMap == null) return;
         gMap.clear();
         this.fornitoreMap.clear();
         this.universityMap.clear();

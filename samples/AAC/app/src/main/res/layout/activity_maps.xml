@@ -17,10 +17,6 @@
         android:layout_marginLeft="@dimen/linear_layout_margin_left"
         android:gravity="start"
         >
-
-
-
-
         <ImageButton
             android:id="@+id/button_car"
             android:scaleType="fitStart"
