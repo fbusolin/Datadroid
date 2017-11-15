@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -85,26 +86,47 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
 
     }
 
-    public class Data extends MapItem{
+
+    @Override
+    protected void onPostExecute(List<Data> r) {
+        super.onPostExecute(r);
+        if(r == null || r.size() <=0)return;
+        List<FornitoriParser.Data> fornitori = r;
+        for(FornitoriParser.Data fornitore : fornitori){
+            LatLng position = fornitore.getPosition();
+            Supplier f = new Supplier(fornitore);
+            this.items.add(f);
+
+        }
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+
+
+    public class Data extends MapItem implements Serializable{
         String n_abilitazioni,
-        n_aggiudicati,
-        tipo_soc,
-        indirizzo,
-        piva,
-        prov_sede,
-        n_transazioni,
-        rag_sociale,
-        reg_sede,
-        id,
-        nazione_sede,
-        comune_sede,
-        n_attivi;
+                n_aggiudicati,
+                tipo_soc,
+                indirizzo,
+                piva,
+                prov_sede,
+                n_transazioni,
+                rag_sociale,
+                reg_sede,
+                id,
+                nazione_sede,
+                comune_sede,
+                n_attivi;
         LatLng position;
 
 
         public void setPosition() {
-             this.position = getLatLngFromAddress(String.format("%s %s %s %s %s",
-                     this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede));
+            this.position = getLatLngFromAddress(String.format("%s %s %s %s %s",
+                    this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede));
         }
 
         public LatLng getLatLngFromAddress(String address){
@@ -181,22 +203,9 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         public String getN_attivi() {
             return n_attivi;
         }
-    }
-
-    @Override
-    protected void onPostExecute(List<Data> r) {
-        super.onPostExecute(r);
-        List<FornitoriParser.Data> fornitori = r;
-        for(FornitoriParser.Data fornitore : fornitori){
-            LatLng position = fornitore.getPosition();
-            Supplier f = new Supplier(fornitore);
-            this.items.add(f);
-
+        public String getAddress(){
+            return String.format("%s, %s, %s, %s (%s)",
+                    this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede);
         }
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
     }
 }

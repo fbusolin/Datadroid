@@ -14,6 +14,8 @@ import it.unive.dais.cevid.datadroid.lib.util.MapItem;
  */
 
 public class Supplier extends MapItem implements Serializable {
+    private String address;
+    private String type;
     private String title;
     private double latitude;
     private double longitude;
@@ -25,6 +27,12 @@ public class Supplier extends MapItem implements Serializable {
         this.latitude = data.getPosition().latitude;
         this.longitude = data.getPosition().longitude;
         this.piva = data.getPiva();
+        this.type = data.getTipo_soc();
+        this.address = data.getAddress();
+    }
+
+    public String getType() {
+        return type;
     }
 
     @Override
@@ -43,6 +51,10 @@ public class Supplier extends MapItem implements Serializable {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     @Override

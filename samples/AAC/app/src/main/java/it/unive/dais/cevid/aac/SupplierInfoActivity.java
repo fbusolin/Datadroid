@@ -6,14 +6,14 @@ import android.widget.TextView;
 
 import it.unive.dais.cevid.aac.entities.Supplier;
 
-public class SupplierActivity extends AppCompatActivity {
+public class SupplierInfoActivity extends AppCompatActivity {
     public static String BUNDLE_SUPPLY = "SUPPLY";
     Supplier supp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_supplier);
+        setContentView(R.layout.activity_info_supplier);
 
         if (savedInstanceState == null) {
             // crea l'activity da zero
@@ -23,7 +23,16 @@ public class SupplierActivity extends AppCompatActivity {
             supp = (Supplier) savedInstanceState.getSerializable(BUNDLE_SUPPLY);
         }
 
-        TextView title = (TextView) findViewById(R.id.supply_title);
-        title.setText(supp.getTitle() + " PIVA:  "+supp.getPiva());
+        TextView titleView = (TextView) findViewById(R.id.supply_title);
+        titleView.setText(supp.getTitle());
+
+        TextView ivaView = (TextView) findViewById(R.id.supply_iva);
+        ivaView.setText(supp.getPiva());
+
+        TextView addressView = (TextView) findViewById(R.id.supply_address);
+        addressView.setText(supp.getAddress());
+
+        TextView typeView = (TextView) findViewById(R.id.supply_type);
+        typeView.setText(supp.getType());
     }
 }

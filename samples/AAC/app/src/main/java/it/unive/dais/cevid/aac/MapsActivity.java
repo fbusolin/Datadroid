@@ -225,20 +225,20 @@ public class MapsActivity extends AppCompatActivity
         //add Comuni
         comuni = new ArrayList<>();
 
-        comuni.add(new Municipality("Venezia",45.4375466,12.3289983,"Municipality di Venezia","000066862"));
-        comuni.add(new Municipality("Milano",45.4628327,9.1075204,"Municipality di Milano","800000013"));
+        comuni.add(new Municipality("Venezia",45.4375466,12.3289983,"Comune di Venezia","000066862"));
+        comuni.add(new Municipality("Milano",45.4628327,9.1075204,"Comune di Milano","800000013"));
 
-        comuni.add(new Municipality("Torino",45.0735885,7.6053946,"Municipality di Torino","000098618"));
-        comuni.add(new Municipality("Bologna",44.4992191,11.2614736,"Municipality di Bologna","000250878"));
+        comuni.add(new Municipality("Torino",45.0735885,7.6053946,"Comune di Torino","000098618"));
+        comuni.add(new Municipality("Bologna",44.4992191,11.2614736,"Comune di Bologna","000250878"));
 
-        comuni.add(new Municipality("Genova",44.4471368,8.7504034,"Municipality di Genova","000164848"));
-        comuni.add(new Municipality("Firenze",43.7800606,11.1707559,"Municipality di Firenze","800000038"));
+        comuni.add(new Municipality("Genova",44.4471368,8.7504034,"Comune di Genova","000164848"));
+        comuni.add(new Municipality("Firenze",43.7800606,11.1707559,"Comune di Firenze","800000038"));
 
-        comuni.add(new Municipality("Roma",41.9102411,12.3955688,"Municipality di Roma","800000047"));
-        comuni.add(new Municipality("Napoli",40.854042,14.1763903,"Municipality di Napoli","000708829"));
+        comuni.add(new Municipality("Roma",41.9102411,12.3955688,"Comune di Roma","800000047"));
+        comuni.add(new Municipality("Napoli",40.854042,14.1763903,"Comune di Napoli","000708829"));
 
-        comuni.add(new Municipality("Palermo",38.1406577,13.2870764,"Municipality di Palermo","800000060"));
-        comuni.add(new Municipality("Cagliari",39.2254656,9.0932726,"Municipality di Cagliari","000021556"));
+        comuni.add(new Municipality("Palermo",38.1406577,13.2870764,"Comune di Palermo","800000060"));
+        comuni.add(new Municipality("Cagliari",39.2254656,9.0932726,"Comune di Cagliari","000021556"));
     }
 
     // ciclo di vita della app
@@ -534,8 +534,8 @@ public class MapsActivity extends AppCompatActivity
                     //activity comuni
                 }
                 else if(fornitoreMap.containsKey(marker.getId())){
-                    Intent intent = new Intent(MapsActivity.this,SupplierActivity.class);
-                    intent.putExtra(SupplierActivity.BUNDLE_SUPPLY,fornitoreMap.get(marker.getId()));
+                    Intent intent = new Intent(MapsActivity.this,SupplierInfoActivity.class);
+                    intent.putExtra(SupplierInfoActivity.BUNDLE_SUPPLY,fornitoreMap.get(marker.getId()));
                     startActivity(intent);
                 }
             }
