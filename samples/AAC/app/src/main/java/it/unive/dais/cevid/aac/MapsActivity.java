@@ -119,10 +119,12 @@ public class MapsActivity extends AppCompatActivity
     private List<University> uni;
     private Map<String, University> universityMap = new HashMap<>();
 
-    private List<Fornitore> fornitori;
     private List<Comune> comuni;
     private Map<String,Comune> comuneMap = new HashMap<>();
+
+    private List<Fornitore> fornitori;
     private Map<String, Fornitore> fornitoreMap = new HashMap<>();
+
     private FornitoriParser fornitoriParser;
 
     /**

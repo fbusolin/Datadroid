@@ -20,14 +20,14 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
  * Sottoclasse di {@code AbstractAsyncParser} che implementa un downloader e parser per il sito http://soldipubblici.thefool.it/
  * Questa classe &egrave; usabile direttamente e non necessita di essere ereditata.
  * Non richiede il generic FiltrableData perch&eacute; utilizza una classe innestata apposita per rappresentare i dati.
- * La classe {@link ScraperReloaded.Data} ha a sua volta due sottoclassi {@link ScraperReloaded.Comune} e
- * {@link ScraperReloaded.Siope} che rappresentano i due possibili dati trovabili nel sito.
+ * La classe {@link ReloadedParser.Data} ha a sua volta due sottoclassi {@link ReloadedParser.Comune} e
+ * {@link ReloadedParser.Siope} che rappresentano i due possibili dati trovabili nel sito.
  * In fase di scraping viene individuato il tipo corretto tra i due in base al contenuto della pagina.
  * Un esempio d'uso
  * <blockquote><pre>
  * {@code
- * {@link ScraperReloaded scraper = new ScraperReloaded("comuni",5);
- * List<{@link ScraperReloaded.Data}> data = scraper.parse();
+ * {@link ReloadedParser scraper = new ReloadedParser("comuni",5);
+ * List<{@link ReloadedParser.Data}> data = scraper.parse();
  * for(Data d : data){
  *     //do something
  * }
@@ -43,13 +43,14 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
  *
  *     */
 
-public class ScraperReloaded extends AbstractAsyncParser<ScraperReloaded.Data, ProgressStepper> {
-    private static final String TAG = "ScraperReloaded";
-    String home = "http://soldipubblici.thefool.it/";
+public class ReloadedParser extends AbstractAsyncParser<ReloadedParser.Data, ProgressStepper> {
+    private static final String TAG = "ReloadedParser";
+    private static final String home = "http://soldipubblici.thefool.it/";
     String url;
     int depth;
-    public ScraperReloaded(String query,int depth){
-        this.url = this.home + query;
+
+    public ReloadedParser(String query, int depth){
+        this.url = home + query;
         this.depth = depth;
     }
 
@@ -62,24 +63,24 @@ public class ScraperReloaded extends AbstractAsyncParser<ScraperReloaded.Data, P
             try{
                 document = connection.get();
             }catch(IOException ex){
-                Logger.getLogger(ScraperReloaded.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReloadedParser.class.getName()).log(Level.SEVERE, null, ex);
             }
             if(document == null)return data;
             Elements contentTable = document.select(".table-hover");
             Elements rows = contentTable.select("tr");
             ProgressStepper parseStepper = progress.getSubProgressStepper(rows.size() - 1);
             for(Element elm : rows.subList(1,rows.size())){
-                String texts = "";
+                StringBuilder texts = new StringBuilder();
                 Elements tokens = elm.select("td");
                 for(Element piece: tokens){
-                    texts +=piece.text() + ";";
+                    texts.append(piece.text()).append(";");
                 }
                 switch(texts.charAt(0)){
                     case 'C':
-                        data.add(produceComuni(texts));
+                        data.add(produceComuni(texts.toString()));
                         break;
                     case 'S':
-                        data.add(produceSiopi(texts));
+                        data.add(produceSiopi(texts.toString()));
                         break;
                 }
                 parseStepper.step();
@@ -124,6 +125,7 @@ public class ScraperReloaded extends AbstractAsyncParser<ScraperReloaded.Data, P
                 spesaTotale,
                 spesaProcapite;
     }
+
     public class Siope extends Data{
         String descrizione,
                 pagamento,
