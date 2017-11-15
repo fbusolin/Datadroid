@@ -17,6 +17,7 @@ import it.unive.dais.cevid.aac.R;
  * @author Alvise Spanò, Università Ca' Foscari
  */
 public class InfoActivity extends AppCompatActivity {
+    public static final String TAG = "InfoActivity";
 
     /**
      * Produce la stringa completa coi crediti.

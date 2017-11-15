@@ -22,6 +22,7 @@ import org.json.JSONObject;
  * @author admin
  */
 public class BandiParser extends AbstractAsyncParser<BandiParser.Data, ProgressStepper> {
+    public static final String TAG = "BandiParser";
     private static String query = "http://dati.consip.it/api/action/datastore_search_sql?"
             + "sql=SELECT%20*%20"
             + "FROM%20%225e12248d-07be-4e94-8be7-05b49787427f%22%20"

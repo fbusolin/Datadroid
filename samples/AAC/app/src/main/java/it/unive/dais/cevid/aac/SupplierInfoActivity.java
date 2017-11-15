@@ -7,6 +7,7 @@ import android.widget.TextView;
 import it.unive.dais.cevid.aac.entities.Supplier;
 
 public class SupplierInfoActivity extends AppCompatActivity {
+    public static final String TAG = "SupplierInfoActivity";
     public static String BUNDLE_SUPPLY = "SUPPLY";
     Supplier supp;
 

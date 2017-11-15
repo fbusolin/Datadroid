@@ -23,6 +23,7 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
  * @author admin
  */
 public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniParser.Data,ProgressStepper> {
+    public static final String TAG = "PartecipazioniParser";
     private static String query = "http://dati.consip.it/api/action/datastore_search_sql?sql="
             + "SELECT%20*%20"
             + "FROM%20%22996e869f-d3a3-4938-bd87-38d8d688860a%22%20"
