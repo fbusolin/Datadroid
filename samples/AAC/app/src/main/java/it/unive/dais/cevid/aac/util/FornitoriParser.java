@@ -4,48 +4,37 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.google.android.gms.common.api.Api;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
+import java.util.Objects;
 
-import it.unive.dais.cevid.aac.R;
-import it.unive.dais.cevid.aac.entities.Fornitore;
+import it.unive.dais.cevid.aac.entities.Supplier;
 import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
-import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 
 /**
- * Created by admin on 13/11/17.
+ * Created by fbusolin on 13/11/17.
  */
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
-    String query = "http://dati.consip.it/api/action/datastore_search?resource_id=f476dccf-d60a-4301-b757-829b3e030ac6";
-    List<Fornitore> items;
+    String query = "http://dati.consip.it/api/action/datastore_search_sql?" +
+            "sql=SELECT%20*%20from%20%22f476dccf-d60a-4301-b757-829b3e030ac6%22%20ORDER%20BY%22Numero_Aggiudicazioni%22%20DESC%20LIMIT%20100";
+    // per ora solo i primi 100 fornitori, in totale sono più di 70000
+    List<Supplier> items;
     Context context;
-    public FornitoriParser(Context ctx, List<Fornitore> list){
+    public FornitoriParser(Context ctx, List<Supplier> list){
         this.items = list;
         this.context = ctx;
     }
@@ -70,7 +59,6 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         List<FornitoriParser.Data> r = new ArrayList();
         JSONObject jo = new JSONObject(data);
         JSONObject result = jo.getJSONObject("result");
-        int n = result.getInt("total");
         JSONArray array = result.getJSONArray("records");
         for(int i = 0; i < array.length(); i++){
             JSONObject obj = array.getJSONObject(i);
@@ -89,7 +77,9 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             d.comune_sede = obj.optString("Comune_Sede_legale");
             d.nazione_sede = obj.optString("Nazione_Sede_legale");
             d.setPosition();
-            r.add(d);
+            if(!Objects.equals(d.n_aggiudicati, "") && !Objects.equals(d.n_aggiudicati, "0")) {
+                r.add(d);
+            }
         }
         return r;
 
@@ -139,16 +129,74 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
         public String getTitle(){
             return this.rag_sociale;
         }
+
+        public String getN_abilitazioni() {
+            return n_abilitazioni;
+        }
+
+        public String getN_aggiudicati() {
+            return n_aggiudicati;
+        }
+
+        public String getTipo_soc() {
+            return tipo_soc;
+        }
+
+        public String getIndirizzo() {
+            return indirizzo;
+        }
+
+        public String getPiva() {
+            return piva;
+        }
+
+        public String getProv_sede() {
+            return prov_sede;
+        }
+
+        public String getN_transazioni() {
+            return n_transazioni;
+        }
+
+        public String getRag_sociale() {
+            return rag_sociale;
+        }
+
+        public String getReg_sede() {
+            return reg_sede;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getNazione_sede() {
+            return nazione_sede;
+        }
+
+        public String getComune_sede() {
+            return comune_sede;
+        }
+
+        public String getN_attivi() {
+            return n_attivi;
+        }
     }
 
     @Override
     protected void onPostExecute(List<Data> r) {
+        super.onPostExecute(r);
         List<FornitoriParser.Data> fornitori = r;
         for(FornitoriParser.Data fornitore : fornitori){
             LatLng position = fornitore.getPosition();
-            Fornitore f = new Fornitore(fornitore.getTitle(),fornitore.getDescription(),fornitore.getPosition().latitude,fornitore.getPosition().longitude);
+            Supplier f = new Supplier(fornitore);
             this.items.add(f);
 
         }
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
     }
 }

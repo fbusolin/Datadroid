@@ -1,6 +1,5 @@
 package it.unive.dais.cevid.aac.entities;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import it.unive.dais.cevid.datadroid.lib.util.MapItem;
  * Created by fbusolin on 13/11/17.
  */
 
-public class Comune extends MapItem implements Serializable {
+public class Municipality extends MapItem implements Serializable {
     private String title;
     private double latitude;
     private double longitude;
@@ -22,7 +21,7 @@ public class Comune extends MapItem implements Serializable {
     private String codiceEnte;
     private static String codiceComparto = "PRO";
 
-    public Comune(String title,double latitude,double longitude, String description,String codiceEnte){
+    public Municipality(String title, double latitude, double longitude, String description, String codiceEnte){
         this.codiceEnte = codiceEnte;
         this.description = description;
         this.title = title;
@@ -88,7 +87,7 @@ public class Comune extends MapItem implements Serializable {
     }
 
     public static void setCodiceComparto(String codiceComparto) {
-        Comune.codiceComparto = codiceComparto;
+        Municipality.codiceComparto = codiceComparto;
     }
 
 }
