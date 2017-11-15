@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_home"
+        android:title="@string/bottom_menu_public"
+        android:icon="@drawable/ic_public"
+        />
+    <item
+        android:id="@+id/menu_search"
+        android:title="@string/bottom_menu_university"
+        android:icon="@drawable/ic_university"
+        />
+
+    <item
+        android:id="@+id/menu_notifications"
+        android:title="@string/bottom_menu_winners"
+        android:icon="@drawable/ic_deliver" />
+</menu>

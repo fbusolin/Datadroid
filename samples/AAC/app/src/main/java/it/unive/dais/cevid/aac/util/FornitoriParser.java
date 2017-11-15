@@ -1,11 +1,17 @@
 package it.unive.dais.cevid.aac.util;
 
+import android.content.Context;
+import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Api;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,8 +23,11 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.R;
+import it.unive.dais.cevid.aac.entities.Fornitore;
 import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
@@ -34,6 +43,12 @@ import okhttp3.RequestBody;
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
     String query = "http://dati.consip.it/api/action/datastore_search?resource_id=f476dccf-d60a-4301-b757-829b3e030ac6";
+    List<Fornitore> items;
+    Context context;
+    public FornitoriParser(Context ctx, List<Fornitore> list){
+        this.items = list;
+        this.context = ctx;
+    }
     @NonNull
     @Override
     public List<Data> parse() throws IOException {
@@ -98,38 +113,42 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
 
 
         public void setPosition() {
-             this.position = getLatLngFromAddress(indirizzo+"+"+comune_sede+"+"+prov_sede+"+"+reg_sede+"+"+nazione_sede);
+             this.position = getLatLngFromAddress(String.format("%s %s %s %s %s",
+                     this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede));
         }
 
         public LatLng getLatLngFromAddress(String address){
-            Request request = new Request.Builder().url("https://maps.google.com/maps/api/geocode/json?address=" +
-                    address +"&key="+ "AIzaSyCASujoPAGw8-K055Djw3hEJUV07F7bCWY").build();
-            try{
-                return(parseAddress(new OkHttpClient().newCall(request).execute().body().string()));
-            } catch(IOException ex){
-                Log.d("AddressParser","error parsing JSON");
-            }
-            return new LatLng(0,0);
-        }
-        public LatLng parseAddress(String data){
+            Geocoder geocode = new Geocoder(context,Locale.getDefault());
+            List<Address> names = new ArrayList<>();
             try {
-                JSONObject obj = new JSONObject(data);
-                JSONArray res = obj.getJSONArray("results");
-                JSONObject payload = res.getJSONObject(0);
-                JSONObject geo = payload.getJSONObject("geometry");
-                JSONObject location = geo.getJSONObject("location");
-                double lat = location.getDouble("lat");
-                double lng = location.getDouble("lng");
-                return new LatLng(lat,lng);
-            } catch (JSONException e) {
+                names = geocode.getFromLocationName(address,10);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-            return new LatLng(0,0);
+            if(names.size() <= 0) return new LatLng(0,0);
+            return new LatLng(names.get(0).getLatitude(),names.get(0).getLongitude());
         }
 
         @Override
         public LatLng getPosition() {
             return this.position;
+        }
+        public String getDescription(){
+            return String.format("%s\n%s", tipo_soc,piva);
+        }
+        public String getTitle(){
+            return this.rag_sociale;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(List<Data> r) {
+        List<FornitoriParser.Data> fornitori = r;
+        for(FornitoriParser.Data fornitore : fornitori){
+            LatLng position = fornitore.getPosition();
+            Fornitore f = new Fornitore(fornitore.getTitle(),fornitore.getDescription(),fornitore.getPosition().latitude,fornitore.getPosition().longitude);
+            this.items.add(f);
+
         }
     }
 }

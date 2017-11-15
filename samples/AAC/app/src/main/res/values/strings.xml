@@ -43,4 +43,8 @@
     <string name="licenze_software">Visualizza dati combinati</string>
     <string name="spese_totali">Somma totale degli importi degli appalti ricercati espressa in euro:</string>
     <string name="google_API_KEY">AIzaSyC8YeWxVXOfhGTVUIwPcB05ipn-heOwPQY</string>
+    <string name="bottom_menu_university">Università</string>
+    <string name="bottom_menu_winners">Fornitori</string>
+    <string name="bottom_menu_public">Comuni</string>
+
 </resources>

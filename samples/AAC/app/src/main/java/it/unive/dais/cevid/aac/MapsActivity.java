@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -51,18 +52,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.entities.Comune;
 import it.unive.dais.cevid.aac.entities.Fornitore;
 import it.unive.dais.cevid.aac.entities.University;
 import it.unive.dais.cevid.aac.util.FornitoriParser;
-import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
@@ -84,7 +85,11 @@ public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnMarkerClickListener,
+        BottomNavigationView.OnNavigationItemSelectedListener{
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
@@ -140,8 +145,6 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
 
         testProgressStepper();
-        fornitoriParser = new FornitoriParser();
-        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         // inizializza le preferenze
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -177,15 +180,17 @@ public class MapsActivity extends AppCompatActivity
                     Log.d(TAG, "no current position available");
             }
         });
+        this.fornitori = new ArrayList<>();
+        fornitoriParser = new FornitoriParser(this,this.fornitori);
+        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         //------- INIZIALIZZAZIONE COMUNI  E FORNITORI---------------------------
-        /** comment out previuos code
         //add Ca Foscari
         uni = new ArrayList<>();
         try {
             List<URL> urls = new ArrayList<>();
             urls.add(new URL("http://www.unive.it/avcp/datiAppalti2016.xml"));
-            uni.add(new University("Ca'Foscari", 45.4824602, 12.1906404, "Università degli studi di Venezia", urls, "000704968000000"));
+            uni.add(new University("Ca'Foscari", 45.437576,12.3289554, "Università degli studi di Venezia", urls, "000704968000000"));
         } catch (MalformedURLException e) {
             Log.w(TAG, "malformed url");
             e.printStackTrace();
@@ -217,11 +222,10 @@ public class MapsActivity extends AppCompatActivity
         }
 
 
-         **/
         //add Comuni
         comuni = new ArrayList<>();
 
-        comuni.add(new Comune("Venezia",45.4046812,12.1008668,"Comune di Venezia","000066862"));
+        comuni.add(new Comune("Venezia",45.4375466,12.3289983,"Comune di Venezia","000066862"));
         comuni.add(new Comune("Milano",45.4628327,9.1075204,"Comune di Milano","800000013"));
 
         comuni.add(new Comune("Torino",45.0735885,7.6053946,"Comune di Torino","000098618"));
@@ -502,6 +506,8 @@ public class MapsActivity extends AppCompatActivity
         gMap.setOnMapLongClickListener(this);
         gMap.setOnCameraMoveStartedListener(this);
         gMap.setOnMarkerClickListener(this);
+        BottomNavigationView bnv = (BottomNavigationView) findViewById(R.id.navigation);
+        bnv.setOnNavigationItemSelectedListener(this);
 
         UiSettings uis = gMap.getUiSettings();
         uis.setZoomGesturesEnabled(true);
@@ -514,12 +520,75 @@ public class MapsActivity extends AppCompatActivity
                         return false;
                     }
                 });
+        gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                if(universityMap.containsKey(marker.getId())){
+                    if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
+                        Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
+                        intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
+                        startActivity(intent);
+                    }
+                }
+                else if(comuneMap.containsKey(marker.getId())){
+                    //activity comuni
+                }
+                else if(fornitoreMap.containsKey(marker.getId())){
+                    //activity fornitori
+                }
+            }
+        });
         uis.setCompassEnabled(true);
         uis.setZoomControlsEnabled(true);
         uis.setMapToolbarEnabled(true);
 
         applyMapSettings();
-        /** comment out previous code
+        populateMap(bnv.getMenu().findItem(bnv.getSelectedItemId()));
+        LatLng rome = new LatLng(41.89,12.51);
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
+    }
+    protected void populateMap(MenuItem item){
+        if(gMap == null) return;
+        gMap.clear();
+        this.fornitoreMap.clear();
+        this.universityMap.clear();
+        this.fornitoreMap.clear();
+        String title = String.valueOf(item.getTitle());
+        if(title.equals(getString(R.string.bottom_menu_university))){
+            generateUniveristy();
+        }
+        else if(title.equals(getString(R.string.bottom_menu_public))){
+            generateComuni();
+        }
+        else if(title.equals(getString(R.string.bottom_menu_winners))){
+            generateFornitori();
+        }
+    }
+
+    private void generateFornitori() {
+        for(Fornitore f : this.fornitori){
+            MarkerOptions markeropt = new MarkerOptions()
+                    .position(f.getPosition())
+                    .title(f.getTitle())
+                    .snippet(f.getDescription())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            Marker marker = gMap.addMarker(markeropt);
+            fornitoreMap.put(marker.getId(),f);
+
+        }
+    }
+    private void generateComuni() {
+        for(Comune c : this.comuni){
+            MarkerOptions markeropt = new MarkerOptions()
+                    .position(c.getPosition())
+                    .title(c.getTitle())
+                    .snippet(c.getDescription())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            Marker marker = gMap.addMarker(markeropt);
+            comuneMap.put(marker.getId(),c);
+        }
+    }
+    private void generateUniveristy() {
         for (University u : uni) {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(u.getPosition());
@@ -529,45 +598,14 @@ public class MapsActivity extends AppCompatActivity
             universityMap.put(marker.getId(), u);
 
         }
-
-        gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
-                    Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
-                    intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
-                    startActivity(intent);
-                }
-            }
-        });
-         **/
-        for(Comune c : this.comuni){
-            MarkerOptions markeropt = new MarkerOptions()
-                    .position(c.getPosition())
-                    .title(c.getTitle())
-                    .snippet(c.getDescription())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            Marker marker = gMap.addMarker(markeropt);
-            comuneMap.put(marker.getId(),c);
-            List<FornitoriParser.Data> fornitoriRaw = new ArrayList<>();
-            try {
-                fornitoriRaw = this.fornitoriParser.getAsyncTask().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-            for(FornitoriParser.Data f : fornitoriRaw){
-
-            }
-        }
-
-
-        LatLng rome = new LatLng(41.89,12.51);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
-
-
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        populateMap(item);
+        return true;
+    }
+
 
     /**
      * Metodo proprietario che forza l'applicazione le impostazioni (o preferenze) che riguardano la mappa.

@@ -18,6 +18,13 @@ public class Fornitore extends MapItem implements Serializable {
     private double longitude;
     private String description;
 
+    public Fornitore(String title,String description,double lat,double lng){
+        this.title = title;
+        this.description = description;
+        this.latitude = lat;
+        this.longitude = lng;
+    }
+
     @Override
     public LatLng getPosition() {
         return new LatLng(latitude,longitude);
