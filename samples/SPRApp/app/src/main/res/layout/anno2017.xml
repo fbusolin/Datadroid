@@ -8,7 +8,7 @@
     <EditText android:id="@+id/inputSearch"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Inserisci il nome di un comune o di una regione"
+        android:hint="Inserisci una voce di spesa da cercare"
         android:inputType="textVisiblePassword"/>
 
     <!-- List View -->

@@ -88,14 +88,32 @@ public class SoldipubbliciParser extends AbstractAsyncParser<SoldipubbliciParser
             d.descrizione_ente = j.getString("descrizione_ente");
             d.idtable = j.getString("idtable");
             d.imp_uscite_att = j.getString("imp_uscite_att");
-            d.importo_2013 = j.getString("importo_2013");
-            d.importo_2014 = j.getString("importo_2014");
-            d.importo_2015 = j.getString("importo_2015");
+
+            if (j.getString("importo_2013") != null && j.getString("importo_2013") != "null")
+                d.importo_2013 = j.getString("importo_2013");
+            else
+                d.importo_2013 = "0";
+
+            if (j.getString("importo_2014") != null && j.getString("importo_2014") != "null")
+                d.importo_2014 = j.getString("importo_2014");
+            else
+                d.importo_2014 = "0";
+
+            if (j.getString("importo_2015") != null && j.getString("importo_2015") != "null")
+                d.importo_2015 = j.getString("importo_2015");
+            else
+                d.importo_2015 = "0";
+
             if (j.getString("importo_2016") != null && j.getString("importo_2016") != "null")
                 d.importo_2016 = j.getString("importo_2016");
             else
                 d.importo_2016 = "0";
-            d.importo_2017 = j.getString("importo_2017");
+
+            if (j.getString("importo_2017") != null && j.getString("importo_2017") != "null")
+                d.importo_2017 = j.getString("importo_2017");
+            else
+                d.importo_2017 = "0";
+
             d.ricerca = j.getString("ricerca");
             d.periodo = j.getString("periodo");
 

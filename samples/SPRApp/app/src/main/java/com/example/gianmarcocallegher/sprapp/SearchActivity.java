@@ -87,7 +87,11 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String numero_abitanti, codice_comparto, codice_ente, descrizione_ente = adapter.getItem(position);
-                List speseEnte = new ArrayList<SoldipubbliciParser.Data>();
+                List spese_ente_2017 = new ArrayList<SoldipubbliciParser.Data>();
+                List spese_ente_2016 = new ArrayList<SoldipubbliciParser.Data>();
+                List spese_ente_2015 = new ArrayList<SoldipubbliciParser.Data>();
+                List spese_ente_2014 = new ArrayList<SoldipubbliciParser.Data>();
+                List spese_ente_2013 = new ArrayList<SoldipubbliciParser.Data>();
 
                 codice_comparto = findCodiceCompartoByDescrizioneEnte(descrizione_ente);
                 codice_ente = findCodiceEnteByDescrizioneEnte(descrizione_ente);
@@ -98,7 +102,24 @@ public class SearchActivity extends AppCompatActivity {
                 soldipubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
                 try {
-                    speseEnte = new ArrayList<>(soldipubbliciParser.getAsyncTask().get());
+                    List<SoldipubbliciParser.Data> l = new ArrayList<>(soldipubbliciParser.getAsyncTask().get());
+                    for (SoldipubbliciParser.Data x : l) {
+                        if (!(x.importo_2017).equals("0")) {
+                            spese_ente_2017.add(x);
+                        }
+                        if (!(x.importo_2016).equals("0")) {
+                            spese_ente_2016.add(x);
+                        }
+                        if (!(x.importo_2015).equals("0")) {
+                            spese_ente_2015.add(x);
+                        }
+                        if (!(x.importo_2014).equals("0")) {
+                            spese_ente_2014.add(x);
+                        }
+                        if (!(x.importo_2013).equals("0")) {
+                            spese_ente_2013.add(x);
+                        }
+                    }
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
@@ -107,7 +128,11 @@ public class SearchActivity extends AppCompatActivity {
 
                 intent.putExtra("numero_abiatanti", numero_abitanti);
                 intent.putExtra("descrizione_ente", descrizione_ente);
-                intent.putExtra("spese_ente", (Serializable) speseEnte);
+                intent.putExtra("spese_ente_2017", (Serializable) spese_ente_2017);
+                intent.putExtra("spese_ente_2016", (Serializable) spese_ente_2016);
+                intent.putExtra("spese_ente_2015", (Serializable) spese_ente_2015);
+                intent.putExtra("spese_ente_2014", (Serializable) spese_ente_2014);
+                intent.putExtra("spese_ente_2013", (Serializable) spese_ente_2013);
 
                 startActivity(intent);
             }
