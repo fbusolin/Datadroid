@@ -1,7 +1,7 @@
 package it.unive.dais.cevid.aac.util;
 
 /**
- * Created by admin on 15/11/17.
+ * Created by fusolin on 15/11/17.
  */
 
 import java.io.IOException;
@@ -19,7 +19,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author admin
+ * @author fbusolin
  */
 public class BandiParser extends AbstractAsyncParser<BandiParser.Data, ProgressStepper> {
     public static final String TAG = "BandiParser";

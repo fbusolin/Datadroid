@@ -1,18 +1,44 @@
 package it.unive.dais.cevid.aac.entities;
 
+import java.io.Serializable;
+
 import it.unive.dais.cevid.aac.util.BandiParser;
 
 /**
- * Created by admin on 15/11/17.
+ * Created by fbusolin on 15/11/17.
  */
 
-public class Bid {
+public class Bid implements Serializable{
     String idLotto;
     String percent_usato;
     String massimale;
+    String descrizione;
+    String title;
     public Bid(BandiParser.Data data){
         this.idLotto = data.getId_lotto();
         this.percent_usato = data.getPer_erosione();
-        this.massimale = data.getQnt_massimale();
+        this.massimale = data.getImporto_massimale();
+        this.descrizione = data.getCat_merceologica();
+        this.title = data.getDenominazione();
+    }
+
+    public String getIdLotto() {
+        return idLotto;
+    }
+
+    public String getPercent_usato() {
+        return percent_usato;
+    }
+
+    public String getMassimale() {
+        return massimale;
+    }
+
+    public String getDescrizione() {
+        return descrizione;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }
