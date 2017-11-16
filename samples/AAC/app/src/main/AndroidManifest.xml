@@ -74,7 +74,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MapsActivity" />
         </activity>
-        <activity android:name=".SupplierInfoActivity"></activity>
+        <activity android:name=".SupplierInfoActivity" />
+        <activity android:name=".DetailsPartecipationsActivity"></activity>
     </application>
 
 </manifest>

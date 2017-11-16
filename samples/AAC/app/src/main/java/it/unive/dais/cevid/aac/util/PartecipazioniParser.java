@@ -1,7 +1,7 @@
 package it.unive.dais.cevid.aac.util;
 
 /**
- * Created by admin on 15/11/17.
+ * Created by fbusolin on 15/11/17.
  */
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniPars
     private static String del = "%27";
     private final String url;
 
-    public PartecipazioniParser(String iva) throws IOException{
+    public PartecipazioniParser(String iva) {
         this.url = query + del + iva + del;
 
     }
@@ -55,6 +55,7 @@ public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniPars
         JSONObject jo = new JSONObject(string);
         JSONObject result = jo.getJSONObject("result");
         JSONArray array = result.getJSONArray("records");
+        ProgressStepper prog = new ProgressStepper(array.length());
         for(int i = 0; i < array.length(); i++){
             JSONObject obj = array.getJSONObject(i);
             Data d = new Data();
@@ -74,6 +75,8 @@ public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniPars
             d.id_download = obj.optString("_id");
 
             r.add(d);
+            prog.step();
+            publishProgress(prog);
         }
         return r;
     }

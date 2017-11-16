@@ -53,6 +53,7 @@ public class BandiParser extends AbstractAsyncParser<BandiParser.Data, ProgressS
         JSONObject jo = new JSONObject(data);
         JSONObject result = jo.getJSONObject("result");
         JSONArray array = result.getJSONArray("records");
+        ProgressStepper prog = new ProgressStepper(array.length());
         for(int i = 0; i < array.length(); i++){
             JSONObject obj = array.getJSONObject(i);
             Data d = new Data();
@@ -83,6 +84,8 @@ public class BandiParser extends AbstractAsyncParser<BandiParser.Data, ProgressS
             d.data_agg = obj.optString("Data_Aggiudicazione");
             d.id_download = obj.optString("_id");
             r.add(d);
+            prog.step();
+            publishProgress(prog);
         }
         return r;
     }
