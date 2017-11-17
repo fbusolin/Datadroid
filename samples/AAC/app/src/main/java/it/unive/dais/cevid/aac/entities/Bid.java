@@ -9,11 +9,11 @@ import it.unive.dais.cevid.aac.util.BandiParser;
  */
 
 public class Bid implements Serializable{
-    String idLotto;
-    String percent_usato;
-    String massimale;
-    String descrizione;
-    String title;
+    private String idLotto;
+    private String percent_usato;
+    private String massimale;
+    private String descrizione;
+    private String title;
     public Bid(BandiParser.Data data){
         this.idLotto = data.getId_lotto();
         this.percent_usato = data.getPer_erosione();

@@ -20,34 +20,59 @@ import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
 /**
  *
- * @author admin
+ * @author fbusolin
  */
 public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniParser.Data,ProgressStepper> {
     public static final String TAG = "PartecipazioniParser";
-    private static String query = "http://dati.consip.it/api/action/datastore_search_sql?sql="
-            + "SELECT%20*%20"
-            + "FROM%20%22996e869f-d3a3-4938-bd87-38d8d688860a%22%20"
-            + "WHERE%20%22Partita_Iva%22%20LIKE%20";
-    private static String del = "%27";
-    private final String url;
+    private final String iva;
+    private static String single = "%27";
+    private static String pair = "%22";
+    private static String space = "%20";
+    private static String res2015 = "f2fcfe51-fe2b-4e5b-a730-659e24aa2b1d";
+    private static String res2016 = "996e869f-d3a3-4938-bd87-38d8d688860a";
+    private static String res2017 = "1ffc9410-9d28-47c6-b729-efc4de4e3287";
 
     public PartecipazioniParser(String iva) {
-        this.url = query + del + iva + del;
+        this.iva =iva;
 
     }
     public List<Data> parse() throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
+        OkHttpClient client = new OkHttpClient();
+        List returnList = new ArrayList();
+        Request request2015 = new Request.Builder()
+                .url(this.buildURL(res2015))
+                .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                .addHeader("Accept", "Application/json")
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .build();
+        Request request2016 = new Request.Builder()
+                .url(this.buildURL(res2016))
+                .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                .addHeader("Accept", "Application/json")
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .build();
+        Request request2017 = new Request.Builder()
+                .url(this.buildURL(res2017))
                 .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
                 .addHeader("Accept", "Application/json")
                 .addHeader("X-Requested-With", "XMLHttpRequest")
                 .build();
         try {
-            return parseJSON(new OkHttpClient().newCall(request).execute().body().string());
+            returnList.addAll(parseJSON(client.newCall(request2015).execute().body().string()));
+            returnList.addAll(parseJSON(client.newCall(request2016).execute().body().string()));
+            returnList.addAll(parseJSON(client.newCall(request2017).execute().body().string()));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        finally {
+            return returnList;
+        }
+    }
+    private String buildURL(String resource) {
+        return "http://dati.consip.it/api/action/datastore_search_sql?"
+                + "sql=SELECT%20*%20"
+                + "FROM"+space+pair+resource+pair+space
+                + "WHERE%20%22Partita_Iva%22LIKE%20"+single+iva+single;
     }
 
     private List<Data> parseJSON(String string) throws JSONException {

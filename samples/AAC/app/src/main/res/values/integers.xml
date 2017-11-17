@@ -4,4 +4,5 @@
     <integer name="zoomFactor_low">0</integer>
     <integer name="zoomFactor_mid">10</integer>
     <integer name="zoomFactor_high">18</integer>
+    <integer name="id_notification">777</integer>
 </resources>

@@ -9,11 +9,11 @@ import it.unive.dais.cevid.aac.util.PartecipazioniParser;
  */
 
 public class Partecipation implements Serializable {
-    String nomePartecipante;
-    String esito;
-    String idLotto;
-    String partita_iva;
-    String nomeLotto;
+    private String nomePartecipante;
+    private String esito;
+    private String idLotto;
+    private String partita_iva;
+    private String nomeLotto;
 
     public Partecipation(PartecipazioniParser.Data data){
         this.esito = data.getEsito();

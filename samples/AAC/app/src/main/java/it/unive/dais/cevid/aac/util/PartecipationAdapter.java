@@ -16,6 +16,7 @@ import it.unive.dais.cevid.aac.entities.Partecipation;
 
 public class PartecipationAdapter extends RecyclerView.Adapter<PartecipationAdapter.PartecipationItem> {
     private List<Partecipation> data;
+
     public PartecipationAdapter(List<Partecipation> data){
         this.data = data;
     }

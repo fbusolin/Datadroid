@@ -25,7 +25,7 @@ import it.unive.dais.cevid.aac.util.RecyclerItemClickListener;
 
 public class DetailsPartecipationsActivity extends AppCompatActivity {
     public static final String TAG = "DetailsPartecipationsActivity";
-    public static final String BUNDLE_PARTECIPATIONS = "PARTS";
+    protected static final String BUNDLE_PARTECIPATIONS = "PARTS";
     private ArrayList<Partecipation> partecipations;
     private Map<Partecipation,Bid> map;
     private ArrayList<BandiParser> parsers;

@@ -1,9 +1,15 @@
 package it.unive.dais.cevid.aac.util;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -12,12 +18,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import it.unive.dais.cevid.aac.MapsActivity;
+import it.unive.dais.cevid.aac.R;
 import it.unive.dais.cevid.aac.entities.Supplier;
 import it.unive.dais.cevid.datadroid.lib.parser.AbstractAsyncParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
@@ -30,15 +40,19 @@ import okhttp3.Request;
  */
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
-    public static final String TAG = "FornitoriParser";
-    String query = "http://dati.consip.it/api/action/datastore_search_sql?" +
+    private static final String TAG = "FornitoriParser";
+    private String query = "http://dati.consip.it/api/action/datastore_search_sql?" +
             "sql=SELECT%20*%20" +
             "FROM%20%22f476dccf-d60a-4301-b757-829b3e030ac6%22%20" +
             "ORDER%20BY%22Numero_Aggiudicazioni%22%20DESC%20LIMIT%20100";
-    // per ora solo i primi 100 fornitori, in totale sono più di 70000
-    List<Supplier> items;
-    Context context;
-    public FornitoriParser(Context ctx, List<Supplier> list){
+    /** per ora solo i primi 100 fornitori attivi nel 2016,
+     * vengono filtrati poi solo quelli che hanno vinto bandi
+     * esclusi quelli nominati
+    **/
+    private ArrayList<Supplier> items;
+    private Context context;
+
+    public FornitoriParser(Context ctx, ArrayList<Supplier> list){
         this.items = list;
         this.context = ctx;
     }
@@ -97,15 +111,37 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
     protected void onPostExecute(List<Data> r) {
         super.onPostExecute(r);
         if(r == null || r.size() <=0)return;
-        List<FornitoriParser.Data> fornitori = r;
+        List<Data> fornitori = new ArrayList<>(r);
         for(FornitoriParser.Data fornitore : fornitori){
             LatLng position = fornitore.getPosition();
             Supplier f = new Supplier(fornitore);
             this.items.add(f);
 
         }
+        /**
+         * finito il download mandiamo una notifica
+         */
+        /* NON FUNZIONA COME DOVREBBE
+           non riesco a inviare gli extra, l'intent in MapsActivity
+           ha sempre mExtra = null.
+        Intent intent = new Intent(this.context,MapsActivity.class);
+        intent.putExtra(MapsActivity.SAVE_SUPPLY,this.items);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP );
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,intent,0);
+        */
+        NotificationManager mManager = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this.context)
+                        .setSmallIcon(R.drawable.ic_file_download_black_24dp)
+                        .setContentTitle(context.getResources().getString(R.string.notification_title))
+                        .setContentText(context.getResources().getString(R.string.notification_msg));
+                        //.setContentIntent(pendingIntent);
+        Notification notification = mBuilder.build();
+        notification.flags = Notification.FLAG_AUTO_CANCEL | Notification.FLAG_ONLY_ALERT_ONCE;
+        int id = context.getResources().getInteger(R.integer.id_notification);
+        mManager.notify(id,notification);
     }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -113,7 +149,7 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
 
 
 
-    public class Data extends MapItem implements Serializable{
+    public class Data implements Serializable{
         String n_abilitazioni,
                 n_aggiudicati,
                 tipo_soc,
@@ -127,12 +163,29 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
                 nazione_sede,
                 comune_sede,
                 n_attivi;
-        LatLng position;
+
+        /*
+        LatLng non è Serializable, mi serve una classe che la wrappi.
+        o usare transient e implementare read e write per LatLng.
+        */
+        private Position position;
+
+        private class Position implements Serializable{
+            private double latitute;
+            private double longitude;
+            private Position(LatLng position){
+                this.latitute = position.latitude;
+                this.longitude = position.longitude;
+            }
+            private LatLng getLatLng(){
+                return new LatLng(this.latitute,this.longitude);
+            }
+        }
 
 
         public void setPosition() {
-            this.position = getLatLngFromAddress(String.format("%s %s %s %s %s",
-                    this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede));
+            this.position = new Position(getLatLngFromAddress(String.format("%s %s %s %s %s",
+                    this.indirizzo,this.comune_sede,this.prov_sede,this.reg_sede,this.nazione_sede)));
         }
 
         public LatLng getLatLngFromAddress(String address){
@@ -147,9 +200,8 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             return new LatLng(names.get(0).getLatitude(),names.get(0).getLongitude());
         }
 
-        @Override
         public LatLng getPosition() {
-            return this.position;
+            return this.position.getLatLng();
         }
         public String getDescription(){
             return String.format("%s\n%s", tipo_soc,piva);

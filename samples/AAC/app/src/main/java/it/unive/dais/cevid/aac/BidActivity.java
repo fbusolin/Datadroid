@@ -8,7 +8,7 @@ import it.unive.dais.cevid.aac.entities.Bid;
 
 public class BidActivity extends AppCompatActivity {
     public static final String TAG = "BidActivity";
-    public static final String BUNDLE_BID = "BID";
+    protected static final String BUNDLE_BID = "BID";
     private Bid bid;
 
     @Override
@@ -25,6 +25,6 @@ public class BidActivity extends AppCompatActivity {
         title.setText(bid.getTitle());
         desc.setText(bid.getDescrizione());
         lotto.setText(bid.getIdLotto());
-        mass.setText(bid.getMassimale() + "¢");
+        mass.setText(bid.getMassimale() + getString(R.string.euro_symbol));
     }
 }

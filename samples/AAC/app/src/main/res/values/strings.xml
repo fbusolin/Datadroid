@@ -52,5 +52,8 @@
     <string name="bid_desc">Descrizione:\u0020</string>
     <string name="bid_lotto">Codice Lotto:\u0020</string>
     <string name="bid_massimale">Importo Massimale:\u0020</string>
+    <string name="notification_title">Fornitori pronti</string>
+    <string name="notification_msg">Completato download fornitori</string>
+    <string name="euro_symbol">\u0020€</string>
 
 </resources>

@@ -6,6 +6,8 @@ package it.unive.dais.cevid.aac;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -93,6 +95,7 @@ public class MapsActivity extends AppCompatActivity
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
+    public static final String SAVE_SUPPLY = "SAVED_SUPPLY";
     // alcune costanti
     private static final String TAG = "MapsActivity";
     /**
@@ -127,7 +130,7 @@ public class MapsActivity extends AppCompatActivity
     private List<Municipality> comuni;
     private Map<String,Municipality> comuneMap = new HashMap<>();
 
-    private List<Supplier> fornitori;
+    private ArrayList<Supplier> fornitori;
     private Map<String, Supplier> fornitoreMap = new HashMap<>();
 
     private FornitoriParser fornitoriParser;
@@ -181,8 +184,19 @@ public class MapsActivity extends AppCompatActivity
             }
         });
         this.fornitori = new ArrayList<>();
-        fornitoriParser = new FornitoriParser(this,this.fornitori);
-        fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+        if(savedInstanceState == null){
+            Intent intent = getIntent();
+            //fallisce sempre, intent non ha mai extra, vedi onPostExecute in FornitoriParser.
+            if(intent.hasExtra(MapsActivity.SAVE_SUPPLY)){
+                this.fornitori = (ArrayList<Supplier>) intent.getSerializableExtra(MapsActivity.SAVE_SUPPLY);
+            }else{
+            fornitoriParser = new FornitoriParser(this,this.fornitori);
+            fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);}
+        }else{
+            this.fornitori = (ArrayList<Supplier>) savedInstanceState.getSerializable(MapsActivity.SAVE_SUPPLY);
+        }
 
         //------- INIZIALIZZAZIONE COMUNI  E FORNITORI---------------------------
         //add Ca Foscari
@@ -266,6 +280,9 @@ public class MapsActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        int id = this.getBaseContext().getResources().getInteger(R.integer.id_notification);
+        mNotificationManager.cancel(id);
     }
 
     /**
@@ -728,6 +745,12 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putSerializable(MapsActivity.SAVE_SUPPLY,this.fornitori);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     // TODO: can be removed

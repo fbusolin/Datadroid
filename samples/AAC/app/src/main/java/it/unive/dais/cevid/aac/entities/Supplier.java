@@ -21,6 +21,7 @@ public class Supplier extends MapItem implements Serializable {
     private double longitude;
     private String description;
     private String piva;
+
     public Supplier(FornitoriParser.Data data){
         this.title = data.getTitle();
         this.description = data.getDescription();
