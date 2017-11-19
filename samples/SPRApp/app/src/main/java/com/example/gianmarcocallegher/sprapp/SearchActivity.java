@@ -126,7 +126,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(SearchActivity.this, SearchableActivity.class);
 
-                intent.putExtra("numero_abiatanti", numero_abitanti);
+                intent.putExtra("numero_abitanti", numero_abitanti);
                 intent.putExtra("descrizione_ente", descrizione_ente);
                 intent.putExtra("spese_ente_2017", (Serializable) spese_ente_2017);
                 intent.putExtra("spese_ente_2016", (Serializable) spese_ente_2016);

@@ -60,6 +60,8 @@ public class SearchableActivity extends AppCompatActivity {
         spese_ente_2014 = (List<SoldipubbliciParser.Data>) sl14;
         spese_ente_2013 = (List<SoldipubbliciParser.Data>) sl13;
 
+        Log.d("ABITANTI", numero_abitanti);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
