@@ -2,18 +2,23 @@ package it.unive.dais.cevid.aac;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.entities.Municipality;
+import it.unive.dais.cevid.aac.util.EntiComparator;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
+import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
 public class ComuniInfoActivity extends AppCompatActivity {
     public static final String COMUNE = "COMUNE" ;
@@ -22,6 +27,7 @@ public class ComuniInfoActivity extends AppCompatActivity {
     Municipality comune;
     String ente;
     String comparto;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +35,9 @@ public class ComuniInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_comuni_info);
         ente = getIntent().getStringExtra(CODENTE);
         comparto = getIntent().getStringExtra(CODCOMPARTO);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar_comuni);
         comune = (Municipality) getIntent().getSerializableExtra(COMUNE);
-        soldipubbliciParser = new SoldipubbliciParser(comparto,ente);
+        soldipubbliciParser = new CustomSoldiParser(comparto,ente);
         soldipubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         Button btn = (Button)  findViewById(R.id.button_comuni);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +88,20 @@ public class ComuniInfoActivity extends AppCompatActivity {
         Intent intent = new Intent(ComuniInfoActivity.this, SearchableActivity.class);
 
         //crop size, quick fix for crash
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Collections.sort(spese_ente_2013,new EntiComparator("2013"));
+            Collections.sort(spese_ente_2014,new EntiComparator("2014"));
+            Collections.sort(spese_ente_2015,new EntiComparator("2015"));
+            Collections.sort(spese_ente_2016,new EntiComparator("2016"));
+            Collections.sort(spese_ente_2017,new EntiComparator("2017"));
+            /* non serve, il Comparator è già decrescente.
+            Collections.reverse(spese_ente_2013);
+            Collections.reverse(spese_ente_2014);
+            Collections.reverse(spese_ente_2015);
+            Collections.reverse(spese_ente_2016);
+            Collections.reverse(spese_ente_2017);
+            */
+        }
         spese_ente_2013.subList(100,spese_ente_2013.size()).clear();
         spese_ente_2014.subList(100,spese_ente_2014.size()).clear();
         spese_ente_2015.subList(100,spese_ente_2015.size()).clear();
@@ -96,5 +117,42 @@ public class ComuniInfoActivity extends AppCompatActivity {
         intent.putExtra("spese_ente_2013", (Serializable) spese_ente_2013);
 
         startActivity(intent);
+    }
+    protected class CustomSoldiParser extends SoldipubbliciParser {
+
+        private static final String TAG = "CustomSoldipubbliciParser";
+
+        protected String codiceComparto;
+        protected String codiceEnte;
+
+        public CustomSoldiParser(String codiceComparto, String codiceEnte) {
+            super(codiceComparto,codiceEnte);
+            progressBar.setIndeterminate(false);
+            progressBar.setMax(100);
+        }
+
+        @Override
+        public void onProgressUpdate(ProgressStepper p) {
+            super.onProgressUpdate(p);
+            int progress = (int) (p.getPercent() * progressBar.getMax());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                progressBar.setProgress(progress, true);
+            }
+            else {
+                progressBar.setProgress(progress);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(List<Data> r) {
+            super.onPostExecute(r);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }
