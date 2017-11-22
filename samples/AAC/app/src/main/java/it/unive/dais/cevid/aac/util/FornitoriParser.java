@@ -40,7 +40,7 @@ import okhttp3.Request;
  */
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
-    private static final String TAG = "FornitoriParser";
+    public static final String TAG = "FornitoriParser";
     private String query = "http://dati.consip.it/api/action/datastore_search_sql?" +
             "sql=SELECT%20*%20" +
             "FROM%20%22f476dccf-d60a-4301-b757-829b3e030ac6%22%20" +

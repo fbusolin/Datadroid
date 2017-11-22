@@ -54,6 +54,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,12 +62,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.entities.Municipality;
 import it.unive.dais.cevid.aac.entities.Supplier;
 import it.unive.dais.cevid.aac.entities.University;
 import it.unive.dais.cevid.aac.util.FornitoriParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
+import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
@@ -134,6 +137,7 @@ public class MapsActivity extends AppCompatActivity
     private Map<String, Supplier> fornitoreMap = new HashMap<>();
 
     private FornitoriParser fornitoriParser;
+
 
     /**
      * Questo metodo viene invocato quando viene inizializzata questa activity.
@@ -548,7 +552,66 @@ public class MapsActivity extends AppCompatActivity
                     }
                 }
                 else if(comuneMap.containsKey(marker.getId())){
-                    //activity comuni
+                    Municipality comune = comuneMap.get(marker.getId());
+                    String numero_abitanti, codice_comparto, codice_ente, descrizione_ente = comune.getDescription();
+                    List spese_ente_2017 = new ArrayList<SoldipubbliciParser.Data>();
+                    List spese_ente_2016 = new ArrayList<SoldipubbliciParser.Data>();
+                    List spese_ente_2015 = new ArrayList<SoldipubbliciParser.Data>();
+                    List spese_ente_2014 = new ArrayList<SoldipubbliciParser.Data>();
+                    List spese_ente_2013 = new ArrayList<SoldipubbliciParser.Data>();
+
+                   /** codice_comparto = findCodiceCompartoByDescrizioneEnte(descrizione_ente);
+                    codice_ente = findCodiceEnteByDescrizioneEnte(descrizione_ente);
+                    numero_abitanti = findNumeroAbitantiByDescrizioneEnte(descrizione_ente);*/
+                   codice_comparto = "PRO";
+                   codice_ente = comune.getCodiceEnte();
+                   numero_abitanti = "100000";
+
+                    SoldipubbliciParser soldipubbliciParser = new SoldipubbliciParser(codice_comparto, codice_ente);
+
+                    soldipubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                    try {
+                        List<SoldipubbliciParser.Data> l = new ArrayList<>(soldipubbliciParser.getAsyncTask().get());
+                        for (SoldipubbliciParser.Data x : l) {
+                            if (!(x.importo_2017).equals("0")) {
+                                spese_ente_2017.add(x);
+                            }
+                            if (!(x.importo_2016).equals("0")) {
+                                spese_ente_2016.add(x);
+                            }
+                            if (!(x.importo_2015).equals("0")) {
+                                spese_ente_2015.add(x);
+                            }
+                            if (!(x.importo_2014).equals("0")) {
+                                spese_ente_2014.add(x);
+                            }
+                            if (!(x.importo_2013).equals("0")) {
+                                spese_ente_2013.add(x);
+                            }
+                        }
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                    Intent intent = new Intent(MapsActivity.this, SearchableActivity.class);
+
+                    //crop size
+                    spese_ente_2013.subList(100,spese_ente_2013.size()).clear();
+                    spese_ente_2014.subList(100,spese_ente_2014.size()).clear();
+                    spese_ente_2015.subList(100,spese_ente_2015.size()).clear();
+                    spese_ente_2016.subList(100,spese_ente_2016.size()).clear();
+                    spese_ente_2017.subList(100,spese_ente_2017.size()).clear();
+
+                    intent.putExtra("numero_abitanti", numero_abitanti);
+                    intent.putExtra("descrizione_ente", descrizione_ente);
+                    intent.putExtra("spese_ente_2017", (Serializable) spese_ente_2017);
+                    intent.putExtra("spese_ente_2016", (Serializable) spese_ente_2016);
+                    intent.putExtra("spese_ente_2015", (Serializable) spese_ente_2015);
+                    intent.putExtra("spese_ente_2014", (Serializable) spese_ente_2014);
+                    intent.putExtra("spese_ente_2013", (Serializable) spese_ente_2013);
+
+                    startActivity(intent);
                 }
                 else if(fornitoreMap.containsKey(marker.getId())){
                     Intent intent = new Intent(MapsActivity.this,SupplierInfoActivity.class);
@@ -746,6 +809,7 @@ public class MapsActivity extends AppCompatActivity
             }
         });
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
