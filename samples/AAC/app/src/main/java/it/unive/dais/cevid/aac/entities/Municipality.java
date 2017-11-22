@@ -19,7 +19,7 @@ public class Municipality extends MapItem implements Serializable {
     private String description;
     private List<URL> urls;
     private String codiceEnte;
-    private static String codiceComparto = "PRO";
+    public static final String codiceComparto = "PRO";
 
     public Municipality(String title, double latitude, double longitude, String description, String codiceEnte){
         this.codiceEnte = codiceEnte;
@@ -82,12 +82,8 @@ public class Municipality extends MapItem implements Serializable {
         this.codiceEnte = codiceEnte;
     }
 
-    public static String getCodiceComparto() {
+    public String getCodiceComparto() {
         return codiceComparto;
-    }
-
-    public static void setCodiceComparto(String codiceComparto) {
-        Municipality.codiceComparto = codiceComparto;
     }
 
 }

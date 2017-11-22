@@ -77,7 +77,8 @@
         <activity android:name=".SupplierInfoActivity" />
         <activity android:name=".DetailsPartecipationsActivity" />
         <activity android:name=".BidActivity" />
-        <activity android:name=".SearchableActivity"></activity>
+        <activity android:name=".SearchableActivity" />
+        <activity android:name=".ComuniInfoActivity"></activity>
     </application>
 
 </manifest>
