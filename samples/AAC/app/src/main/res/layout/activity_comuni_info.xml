@@ -4,6 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp">
+    <TextView style="@style/Field.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/comuni_title" />
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout  style="@style/Field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/com_desc"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/com_desc"/>
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
     <Button
         android:id="@+id/button_comuni"
         android:layout_width="match_parent"

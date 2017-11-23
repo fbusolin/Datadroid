@@ -55,5 +55,6 @@
     <string name="notification_title">Fornitori pronti</string>
     <string name="notification_msg">Completato download fornitori</string>
     <string name="euro_symbol">\u0020€</string>
+    <string name="com_desc">Nome:\u0020</string>
 
 </resources>

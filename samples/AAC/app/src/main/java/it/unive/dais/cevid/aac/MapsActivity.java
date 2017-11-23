@@ -68,6 +68,7 @@ import java.util.concurrent.ExecutionException;
 import it.unive.dais.cevid.aac.entities.Municipality;
 import it.unive.dais.cevid.aac.entities.Supplier;
 import it.unive.dais.cevid.aac.entities.University;
+import it.unive.dais.cevid.aac.util.ComuniParser;
 import it.unive.dais.cevid.aac.util.FornitoriParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;

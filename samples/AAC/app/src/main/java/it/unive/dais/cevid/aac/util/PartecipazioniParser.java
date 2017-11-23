@@ -73,6 +73,10 @@ public class PartecipazioniParser extends AbstractAsyncParser<PartecipazioniPars
                 + "sql=SELECT%20*%20"
                 + "FROM"+space+pair+resource+pair+space
                 + "WHERE%20%22Partita_Iva%22LIKE%20"+single+iva+single;
+
+        /*SELECT *
+        * FROM ...
+        * WHERE "Partita_Iva" LIKE '[iva]'*/
     }
 
     private List<Data> parseJSON(String string) throws JSONException {

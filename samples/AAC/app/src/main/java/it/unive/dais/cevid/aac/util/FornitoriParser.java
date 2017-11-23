@@ -45,10 +45,17 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             "sql=SELECT%20*%20" +
             "FROM%20%22f476dccf-d60a-4301-b757-829b3e030ac6%22%20" +
             "ORDER%20BY%22Numero_Aggiudicazioni%22%20DESC%20LIMIT%20100";
+    /*  SELECT *
+        FROM ...
+        ORDER BY "Numero_Aggiudicazioni" DESC LIMIT 100
+    */
+
+
     /** per ora solo i primi 100 fornitori attivi nel 2016,
      * vengono filtrati poi solo quelli che hanno vinto bandi
      * esclusi quelli nominati
     **/
+
     private ArrayList<Supplier> items;
     private Context context;
 

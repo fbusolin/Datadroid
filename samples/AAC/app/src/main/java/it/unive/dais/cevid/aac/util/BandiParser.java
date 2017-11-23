@@ -73,6 +73,10 @@ public class BandiParser extends AbstractAsyncParser<BandiParser.Data, ProgressS
                 + "sql=SELECT%20*%20"
                 + "FROM"+space+pair+resource+pair+space
                 + "WHERE%20%22Identificativo_Lotto%22LIKE%20"+single+lotto+single;
+
+        /*SELECT *
+        * FROM ...
+        * WHERE "Identificativo_Lotto" LIKE '[lotto]'*/
     }
 
     public List<Data> parseJSON(String data) throws JSONException{

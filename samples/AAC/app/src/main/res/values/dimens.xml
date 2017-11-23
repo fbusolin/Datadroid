@@ -11,4 +11,7 @@
     <dimen name="linear_layout_margin_bottom">40dp</dimen>
     <dimen name="linear_layout_margin_left">10dp</dimen>
     <dimen name="button_margin">10dp</dimen>
+    <dimen name="sep_fields">7dp</dimen>
+    <dimen name="sep_fields_title">10dp</dimen>
+
 </resources>

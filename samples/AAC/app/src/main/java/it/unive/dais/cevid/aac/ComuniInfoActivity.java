@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,13 +17,16 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import it.unive.dais.cevid.aac.entities.Municipality;
+import it.unive.dais.cevid.aac.util.ComuniParser;
 import it.unive.dais.cevid.aac.util.EntiComparator;
 import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
 public class ComuniInfoActivity extends AppCompatActivity {
     public static final String COMUNE = "COMUNE" ;
+    private static final int MAX_SIZE = 100;
     SoldipubbliciParser soldipubbliciParser;
+    ComuniParser comuniParser;
     public static String CODENTE = "ENTE",CODCOMPARTO = "COMPARTO";
     Municipality comune;
     String ente;
@@ -39,6 +43,8 @@ public class ComuniInfoActivity extends AppCompatActivity {
         comune = (Municipality) getIntent().getSerializableExtra(COMUNE);
         soldipubbliciParser = new CustomSoldiParser(comparto,ente);
         soldipubbliciParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        comuniParser = new ComuniParser(comune.getTitle());
+        comuniParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         Button btn = (Button)  findViewById(R.id.button_comuni);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,11 +52,13 @@ public class ComuniInfoActivity extends AppCompatActivity {
                 click();
             }
         });
+        ((TextView)findViewById(R.id.comuni_title)).setText(comune.getTitle());
+        ((TextView)findViewById(R.id.com_desc)).setText(comune.getDescription());
     }
 
 
     protected void click(){
-        String numero_abitanti, codice_comparto, codice_ente, descrizione_ente = comune.getDescription();
+        String numero_abitanti = "0", descrizione_ente = comune.getDescription();
         List spese_ente_2017 = new ArrayList<SoldipubbliciParser.Data>();
         List spese_ente_2016 = new ArrayList<SoldipubbliciParser.Data>();
         List spese_ente_2015 = new ArrayList<SoldipubbliciParser.Data>();
@@ -60,33 +68,35 @@ public class ComuniInfoActivity extends AppCompatActivity {
         /** codice_comparto = findCodiceCompartoByDescrizioneEnte(descrizione_ente);
          codice_ente = findCodiceEnteByDescrizioneEnte(descrizione_ente);
          numero_abitanti = findNumeroAbitantiByDescrizioneEnte(descrizione_ente);*/
-        numero_abitanti = "100000"; //TODO:  fix it
 
         try {
             List<SoldipubbliciParser.Data> l = new ArrayList<>(soldipubbliciParser.getAsyncTask().get());
+            List<ComuniParser.Data> c = new ArrayList<>(comuniParser.getAsyncTask().get());
+            numero_abitanti = (c.isEmpty())?"0":c.get(0).getPopResidente();
             for (SoldipubbliciParser.Data x : l) {
-                if (!(x.importo_2017).equals("0")) {
+                if (!(x.importo_2017).equals("0") && !(x.importo_2017).equals("null") && !(x.importo_2017).equals("")) {
                     spese_ente_2017.add(x);
                 }
-                if (!(x.importo_2016).equals("0")) {
+                if (!(x.importo_2016).equals("0") && !(x.importo_2016).equals("null") && !(x.importo_2016).equals("")) {
                     spese_ente_2016.add(x);
                 }
-                if (!(x.importo_2015).equals("0")) {
+                if (!(x.importo_2015).equals("0") && !(x.importo_2015).equals("null") && !(x.importo_2015).equals("")) {
                     spese_ente_2015.add(x);
                 }
-                if (!(x.importo_2014).equals("0")) {
+                if (!(x.importo_2014).equals("0") && !(x.importo_2014).equals("null") && !(x.importo_2014).equals("")) {
                     spese_ente_2014.add(x);
                 }
-                if (!(x.importo_2013).equals("0")) {
+                if (!(x.importo_2013).equals("0") && !(x.importo_2013).equals("null") && !(x.importo_2013).equals("")) {
                     spese_ente_2013.add(x);
                 }
             }
+            
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
         Intent intent = new Intent(ComuniInfoActivity.this, SearchableActivity.class);
-
+/*
         //crop size, quick fix for crash
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Collections.sort(spese_ente_2013,new EntiComparator("2013"));
@@ -94,20 +104,20 @@ public class ComuniInfoActivity extends AppCompatActivity {
             Collections.sort(spese_ente_2015,new EntiComparator("2015"));
             Collections.sort(spese_ente_2016,new EntiComparator("2016"));
             Collections.sort(spese_ente_2017,new EntiComparator("2017"));
-            /* non serve, il Comparator è già decrescente.
+            //non serve, il Comparator è già decrescente.
             Collections.reverse(spese_ente_2013);
             Collections.reverse(spese_ente_2014);
             Collections.reverse(spese_ente_2015);
             Collections.reverse(spese_ente_2016);
             Collections.reverse(spese_ente_2017);
-            */
-        }
-        spese_ente_2013.subList(100,spese_ente_2013.size()).clear();
-        spese_ente_2014.subList(100,spese_ente_2014.size()).clear();
-        spese_ente_2015.subList(100,spese_ente_2015.size()).clear();
-        spese_ente_2016.subList(100,spese_ente_2016.size()).clear();
-        spese_ente_2017.subList(100,spese_ente_2017.size()).clear();
 
+        }
+        if(spese_ente_2013.size() > MAX_SIZE)spese_ente_2013.subList(MAX_SIZE,spese_ente_2013.size()).clear();
+        if(spese_ente_2014.size() > MAX_SIZE)spese_ente_2014.subList(MAX_SIZE,spese_ente_2014.size()).clear();
+        if(spese_ente_2015.size() > MAX_SIZE)spese_ente_2015.subList(MAX_SIZE,spese_ente_2015.size()).clear();
+        if(spese_ente_2016.size() > MAX_SIZE)spese_ente_2016.subList(MAX_SIZE,spese_ente_2016.size()).clear();
+        if(spese_ente_2017.size() > MAX_SIZE)spese_ente_2017.subList(MAX_SIZE,spese_ente_2017.size()).clear();
+*/
         intent.putExtra("numero_abitanti", numero_abitanti);
         intent.putExtra("descrizione_ente", descrizione_ente);
         intent.putExtra("spese_ente_2017", (Serializable) spese_ente_2017);

@@ -11,13 +11,15 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:orientation="vertical">
-        <TextView
+
+        <TextView style="@style/Field.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/supply_title"
             android:textAlignment="center"/>
+        <View style="@style/Divider"/>
 
-        <LinearLayout
+        <LinearLayout style="@style/Field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -31,7 +33,7 @@
                 android:id="@+id/supply_type"/>
         </LinearLayout>
 
-        <LinearLayout
+        <LinearLayout style="@style/Field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -45,7 +47,7 @@
                 android:id="@+id/supply_iva"/>
         </LinearLayout>
 
-        <LinearLayout
+        <LinearLayout style="@style/Field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -59,6 +61,7 @@
                 android:id="@+id/supply_address"/>
         </LinearLayout>
 
+        <View style="@style/Divider"/>
         <Button
             android:id="@+id/button_supply_expand"
             android:layout_width="match_parent"
