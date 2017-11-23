@@ -63,15 +63,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
 import it.unive.dais.cevid.aac.entities.Municipality;
 import it.unive.dais.cevid.aac.entities.Supplier;
 import it.unive.dais.cevid.aac.entities.University;
-import it.unive.dais.cevid.aac.util.ComuniParser;
 import it.unive.dais.cevid.aac.util.FornitoriParser;
 import it.unive.dais.cevid.datadroid.lib.parser.Parser;
-import it.unive.dais.cevid.datadroid.lib.parser.SoldipubbliciParser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
@@ -96,7 +92,7 @@ public class MapsActivity extends AppCompatActivity
         GoogleMap.OnMapLongClickListener,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnMarkerClickListener,
-        BottomNavigationView.OnNavigationItemSelectedListener{
+        BottomNavigationView.OnNavigationItemSelectedListener {
 
     protected static final int REQUEST_CHECK_SETTINGS = 500;
     protected static final int PERMISSIONS_REQUEST_ACCESS_BOTH_LOCATION = 501;
@@ -133,7 +129,7 @@ public class MapsActivity extends AppCompatActivity
     private Map<String, University> universityMap = new HashMap<>();
 
     private List<Municipality> comuni;
-    private Map<String,Municipality> comuneMap = new HashMap<>();
+    private Map<String, Municipality> comuneMap = new HashMap<>();
 
     private ArrayList<Supplier> fornitori;
     private Map<String, Supplier> fornitoreMap = new HashMap<>();
@@ -195,15 +191,16 @@ public class MapsActivity extends AppCompatActivity
         this.fornitori = new ArrayList<>();
 
 
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             Intent intent = getIntent();
             //fallisce sempre, intent non ha mai extra, vedi onPostExecute in FornitoriParser.
-            if(intent.hasExtra(MapsActivity.SAVE_SUPPLY)){
+            if (intent.hasExtra(MapsActivity.SAVE_SUPPLY)) {
                 this.fornitori = (ArrayList<Supplier>) intent.getSerializableExtra(MapsActivity.SAVE_SUPPLY);
-            }else{
-            fornitoriParser = new FornitoriParser(this,this.fornitori);
-            fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);}
-        }else{
+            } else {
+                fornitoriParser = new FornitoriParser(this,findViewById(R.id.main_view),this.fornitori);
+                fornitoriParser.getAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        } else {
             this.fornitori = (ArrayList<Supplier>) savedInstanceState.getSerializable(MapsActivity.SAVE_SUPPLY);
         }
 
@@ -213,7 +210,7 @@ public class MapsActivity extends AppCompatActivity
         try {
             List<URL> urls = new ArrayList<>();
             urls.add(new URL("http://www.unive.it/avcp/datiAppalti2016.xml"));
-            uni.add(new University("Ca'Foscari", 45.437576,12.3289554, "Università degli studi di Venezia", urls, "000704968000000"));
+            uni.add(new University("Ca'Foscari", 45.437576, 12.3289554, "Università degli studi di Venezia", urls, "000704968000000"));
         } catch (MalformedURLException e) {
             Log.w(TAG, "malformed url");
             e.printStackTrace();
@@ -248,20 +245,20 @@ public class MapsActivity extends AppCompatActivity
         //add Comuni
         comuni = new ArrayList<>();
 
-        comuni.add(new Municipality("Venezia",45.4375466,12.3289983,"Comune di Venezia","000066862"));
-        comuni.add(new Municipality("Milano",45.4628327,9.1075204,"Comune di Milano","800000013"));
+        comuni.add(new Municipality("Venezia", 45.4375466, 12.3289983, "Comune di Venezia", "000066862"));
+        comuni.add(new Municipality("Milano", 45.4628327, 9.1075204, "Comune di Milano", "800000013"));
 
-        comuni.add(new Municipality("Torino",45.0735885,7.6053946,"Comune di Torino","000098618"));
-        comuni.add(new Municipality("Bologna",44.4992191,11.2614736,"Comune di Bologna","000250878"));
+        comuni.add(new Municipality("Torino", 45.0735885, 7.6053946, "Comune di Torino", "000098618"));
+        comuni.add(new Municipality("Bologna", 44.4992191, 11.2614736, "Comune di Bologna", "000250878"));
 
-        comuni.add(new Municipality("Genova",44.4471368,8.7504034,"Comune di Genova","000164848"));
-        comuni.add(new Municipality("Firenze",43.7800606,11.1707559,"Comune di Firenze","800000038"));
+        comuni.add(new Municipality("Genova", 44.4471368, 8.7504034, "Comune di Genova", "000164848"));
+        comuni.add(new Municipality("Firenze", 43.7800606, 11.1707559, "Comune di Firenze", "800000038"));
 
-        comuni.add(new Municipality("Roma",41.9102411,12.3955688,"Comune di Roma","800000047"));
-        comuni.add(new Municipality("Napoli",40.854042,14.1763903,"Comune di Napoli","000708829"));
+        comuni.add(new Municipality("Roma", 41.9102411, 12.3955688, "Comune di Roma", "800000047"));
+        comuni.add(new Municipality("Napoli", 40.854042, 14.1763903, "Comune di Napoli", "000708829"));
 
-        comuni.add(new Municipality("Palermo",38.1406577,13.2870764,"Comune di Palermo","800000060"));
-        comuni.add(new Municipality("Cagliari",39.2254656,9.0932726,"Comune di Cagliari","000021556"));
+        comuni.add(new Municipality("Palermo", 38.1406577, 13.2870764, "Comune di Palermo", "800000060"));
+        comuni.add(new Municipality("Cagliari", 39.2254656, 9.0932726, "Comune di Cagliari", "000021556"));
     }
 
     // ciclo di vita della app
@@ -549,23 +546,21 @@ public class MapsActivity extends AppCompatActivity
         gMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                if(universityMap.containsKey(marker.getId())){
-                    if(hereMarker == null || (hereMarker.getPosition() != marker.getPosition())){
+                if (universityMap.containsKey(marker.getId())) {
+                    if (hereMarker == null || (hereMarker.getPosition() != marker.getPosition())) {
                         Intent intent = new Intent(MapsActivity.this, SearchActivity.class);
                         intent.putExtra(SearchActivity.BUNDLE_UNI, universityMap.get(marker.getId()));
                         startActivity(intent);
                     }
-                }
-                else if(comuneMap.containsKey(marker.getId())){
-                    Intent intent = new Intent(MapsActivity.this,ComuniInfoActivity.class);
-                    intent.putExtra(ComuniInfoActivity.CODENTE,comuneMap.get(marker.getId()).getCodiceEnte());
-                    intent.putExtra(ComuniInfoActivity.CODCOMPARTO,Municipality.codiceComparto);
-                    intent.putExtra(ComuniInfoActivity.COMUNE,comuneMap.get(marker.getId()));
+                } else if (comuneMap.containsKey(marker.getId())) {
+                    Intent intent = new Intent(MapsActivity.this, ComuniInfoActivity.class);
+                    intent.putExtra(ComuniInfoActivity.CODENTE, comuneMap.get(marker.getId()).getCodiceEnte());
+                    intent.putExtra(ComuniInfoActivity.CODCOMPARTO, Municipality.codiceComparto);
+                    intent.putExtra(ComuniInfoActivity.COMUNE, comuneMap.get(marker.getId()));
                     startActivity(intent);
-                }
-                else if(fornitoreMap.containsKey(marker.getId())){
-                    Intent intent = new Intent(MapsActivity.this,SupplierInfoActivity.class);
-                    intent.putExtra(SupplierInfoActivity.BUNDLE_SUPPLY,fornitoreMap.get(marker.getId()));
+                } else if (fornitoreMap.containsKey(marker.getId())) {
+                    Intent intent = new Intent(MapsActivity.this, SupplierInfoActivity.class);
+                    intent.putExtra(SupplierInfoActivity.BUNDLE_SUPPLY, fornitoreMap.get(marker.getId()));
                     startActivity(intent);
                 }
             }
@@ -575,51 +570,59 @@ public class MapsActivity extends AppCompatActivity
         uis.setMapToolbarEnabled(true);
 
         applyMapSettings();
+        for(int i = 0; i < bnv.getMenu().size();i++){
+            MenuItem item = bnv.getMenu().getItem(i);
+            if (item.getTitle().equals(getString(R.string.bottom_menu_winners))){
+                item.setEnabled(false);
+            }
+
+        }
         populateMap(bnv.getMenu().findItem(bnv.getSelectedItemId()));
-        LatLng rome = new LatLng(41.89,12.51);
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome,5));
+        LatLng rome = new LatLng(41.89, 12.51);
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(rome, 5));
     }
-    protected void populateMap(MenuItem item){
-        if(gMap == null) return;
+
+    protected void populateMap(MenuItem item) {
+        if (gMap == null) return;
         gMap.clear();
         this.fornitoreMap.clear();
         this.universityMap.clear();
         this.fornitoreMap.clear();
         String title = String.valueOf(item.getTitle());
-        if(title.equals(getString(R.string.bottom_menu_university))){
+        if (title.equals(getString(R.string.bottom_menu_university))) {
             generateUniveristy();
-        }
-        else if(title.equals(getString(R.string.bottom_menu_public))){
+        } else if (title.equals(getString(R.string.bottom_menu_public))) {
             generateComuni();
-        }
-        else if(title.equals(getString(R.string.bottom_menu_winners))){
+        } else if (title.equals(getString(R.string.bottom_menu_winners))) {
             generateFornitori();
         }
     }
 
     private void generateFornitori() {
-        for(Supplier f : this.fornitori){
+        for (Supplier f : this.fornitori) {
             MarkerOptions markeropt = new MarkerOptions()
                     .position(f.getPosition())
                     .title(f.getTitle())
                     .snippet(f.getDescription())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
             Marker marker = gMap.addMarker(markeropt);
-            fornitoreMap.put(marker.getId(),f);
+            fornitoreMap.put(marker.getId(), f);
 
         }
     }
+
     private void generateComuni() {
-        for(Municipality c : this.comuni){
+        for (Municipality c : this.comuni) {
             MarkerOptions markeropt = new MarkerOptions()
                     .position(c.getPosition())
                     .title(c.getTitle())
                     .snippet(c.getDescription())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             Marker marker = gMap.addMarker(markeropt);
-            comuneMap.put(marker.getId(),c);
+            comuneMap.put(marker.getId(), c);
         }
     }
+
     private void generateUniveristy() {
         for (University u : uni) {
             MarkerOptions markerOptions = new MarkerOptions();
@@ -763,7 +766,7 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putSerializable(MapsActivity.SAVE_SUPPLY,this.fornitori);
+        savedInstanceState.putSerializable(MapsActivity.SAVE_SUPPLY, this.fornitori);
         super.onSaveInstanceState(savedInstanceState);
     }
 

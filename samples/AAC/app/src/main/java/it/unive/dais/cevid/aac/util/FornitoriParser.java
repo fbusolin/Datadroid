@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.NotificationCompat;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -41,6 +43,7 @@ import okhttp3.Request;
 
 public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,ProgressStepper> {
     public static final String TAG = "FornitoriParser";
+    private final View container;
     private String query = "http://dati.consip.it/api/action/datastore_search_sql?" +
             "sql=SELECT%20*%20" +
             "FROM%20%22f476dccf-d60a-4301-b757-829b3e030ac6%22%20" +
@@ -59,9 +62,10 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
     private ArrayList<Supplier> items;
     private Context context;
 
-    public FornitoriParser(Context ctx, ArrayList<Supplier> list){
+    public FornitoriParser(Context ctx, View container,ArrayList<Supplier> list){
         this.items = list;
         this.context = ctx;
+        this.container = container;
     }
     @NonNull
     @Override
@@ -123,6 +127,13 @@ public class FornitoriParser extends AbstractAsyncParser<FornitoriParser.Data,Pr
             LatLng position = fornitore.getPosition();
             Supplier f = new Supplier(fornitore);
             this.items.add(f);
+            BottomNavigationView bnv = (BottomNavigationView) this.container.findViewById(R.id.navigation);
+            for(int i = 0; i < bnv.getMenu().size();i++){
+                MenuItem item = bnv.getMenu().getItem(i);
+                if(!item.isEnabled()){
+                    item.setEnabled(true);
+                }
+            }
 
         }
         /**
