@@ -20,7 +20,7 @@ import it.unive.dais.cevid.aac.util.PartecipazioniParser;
 
 public class SupplierInfoActivity extends AppCompatActivity {
     public static final String TAG = "SupplierInfoActivity";
-    protected static String BUNDLE_SUPPLY = "SUPPLY";
+    public static String BUNDLE_SUPPLY = "SUPPLY";
     private Supplier supp;
     private View mainView;
     private PartecipazioniParser parser;

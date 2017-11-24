@@ -71,7 +71,8 @@ import it.unive.dais.cevid.datadroid.lib.parser.Parser;
 import it.unive.dais.cevid.datadroid.lib.util.MapItem;
 import it.unive.dais.cevid.datadroid.lib.util.ProgressStepper;
 
-
+/*TODO: andrebbe rimossa, mantenuta per verificare che MapFragment e MainActivity
+ *TODO: ne abbiano assorbito tutte le responsabilità */
 /**
  * Questa classe è la componente principale del toolkit: fornisce servizi primari per un'app basata su Google Maps, tra cui localizzazione, pulsanti
  * di navigazione, preferenze ed altro. Essa rappresenta un template che è una buona pratica riusabile per la scrittura di app, fungendo da base
