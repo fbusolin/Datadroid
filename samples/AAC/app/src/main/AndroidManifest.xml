@@ -75,10 +75,11 @@
         <activity android:name=".SearchableActivity" />
         <activity android:name=".ComuniInfoActivity" />
         <activity android:name=".MainActivity"
-            android:label="@string/title_activity_maps">
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

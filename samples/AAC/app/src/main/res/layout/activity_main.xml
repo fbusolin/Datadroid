@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="it.unive.dais.cevid.aac.MainActivity"
-    android:id="@+id/main_view">
+    android:id="@+id/main_view"
+    >
 
     <FrameLayout
         android:layout_width="match_parent"
