@@ -379,15 +379,15 @@ public class MapFragment extends Fragment
         gMap.clear();
     }
 
-    public void setUni(List<University> uni) {
+    public void setUniversities(List<University> uni) {
         this.universities = uni;
     }
 
-    public void setSupply(ArrayList<Supplier> supply) {
+    public void setSuppliers(ArrayList<Supplier> supply) {
         this.suppliers = supply;
     }
 
-    public void setMun(List<Municipality> mun) {
+    public void setMunicipalities(List<Municipality> mun) {
         this.municipalities = mun;
     }
 

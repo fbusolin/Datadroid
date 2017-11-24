@@ -69,15 +69,42 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".SupplierInfoActivity" />
-        <activity android:name=".DetailsPartecipationsActivity" />
-        <activity android:name=".BidActivity" />
-        <activity android:name=".SearchableActivity" />
-        <activity android:name=".ComuniInfoActivity" />
+        <activity android:name=".SupplierInfoActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+
+        </activity>
+        <activity android:name=".DetailsPartecipationsActivity"
+            android:parentActivityName=".SupplierInfoActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SupplierInfoActivity" />
+        </activity>
+
+        <activity android:name=".BidActivity"
+            android:parentActivityName=".DetailsPartecipationsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".DetailsPartecipationsActivity" />
+        </activity>
+
+        <activity android:name=".SearchableActivity"
+            android:parentActivityName=".ComuniInfoActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ComuniInfoActivity" />
+        </activity>
+        <activity android:name=".ComuniInfoActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+
+        </activity>
         <activity android:name=".MainActivity"
-            android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme"
-            >
+            android:label="@string/title_activity_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

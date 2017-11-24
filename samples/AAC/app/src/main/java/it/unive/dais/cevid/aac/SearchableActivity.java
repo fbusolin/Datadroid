@@ -48,8 +48,8 @@ public class SearchableActivity extends AppCompatActivity {
         spese_ente_2013 = (List<SoldipubbliciParser.Data>) sl13;
 
         Log.d("ABITANTI", numero_abitanti);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setElevation(0);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("2017"));

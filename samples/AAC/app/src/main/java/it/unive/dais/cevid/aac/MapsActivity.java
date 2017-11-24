@@ -361,7 +361,7 @@ public class MapsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.maps_with_options, menu);
-        return true;
+        return false;
     }
 
     /**

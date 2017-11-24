@@ -12,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -149,14 +150,14 @@ public class MainActivity extends AppCompatActivity implements
 
     private void setupMapFragment(MapFragment fragment) {
         fragment.setParentActivity(this);
-        fragment.setUni(uni);
-        fragment.setSupply(fornitori);
-        fragment.setMun(comuni);
+        fragment.setUniversities(uni);
+        fragment.setSuppliers(fornitori);
+        fragment.setMunicipalities(comuni);
     }
 
 
     private void setContentFragment(int container, Fragment fragment) {
-        fManager.beginTransaction().replace(container,fragment).commit();
+        fManager.beginTransaction().replace(container,fragment,fragment.getTag()).commit();
     }
     @Override
     public void onConnected(@Nullable Bundle bundle) {
