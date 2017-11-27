@@ -14,5 +14,5 @@ public interface Function<T, R> {
      * @param x parametro di input di tipo T.
      * @return risultato in output di tipo R.
      */
-    R eval(T x);
+    R apply(T x);
 }
